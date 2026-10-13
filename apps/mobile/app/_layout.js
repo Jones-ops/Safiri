@@ -48,6 +48,8 @@ function RootStack() {
         <Stack.Screen name="privacy" options={{ title: t('privacy.title') }} />
         <Stack.Screen name="credits" options={{ title: t('credits.title') }} />
         <Stack.Screen name="design-system" options={{ title: t('designSystem.title') }} />
+        <Stack.Screen name="p/[slug]" options={{ title: '' }} />
+        <Stack.Screen name="d/[slug]" options={{ title: '' }} />
       </Stack>
     </>
   );

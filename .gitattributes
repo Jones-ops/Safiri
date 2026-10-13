@@ -1,0 +1,4 @@
+# Keep LF everywhere so generated files (seed.sql) and tests match on Windows clones too.
+* text=auto eol=lf
+*.png binary
+*.jpg binary

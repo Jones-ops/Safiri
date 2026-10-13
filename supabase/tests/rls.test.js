@@ -150,3 +150,15 @@ test.describe('provider and agency', () => {
     });
   });
 });
+
+test.describe('public reviews', () => {
+  test('show rating and text but not which booking they came from', async () => {
+    await as(db, null, async (tx) => {
+      const { rows } = await tx.query('select rating, body, package_id from reviews');
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].rating, 5);
+    });
+    const err = await expectError(db, null, (tx) => tx.query('select booking_id from reviews'));
+    assert.match(String(err?.message), /permission denied/);
+  });
+});

@@ -15,4 +15,5 @@ export { EmptyState } from './EmptyState';
 export { Skeleton } from './Skeleton';
 export { StatusLabel } from './StatusLabel';
 export { PhotoBackground } from './PhotoBackground';
-export { Checkbox, SwitchRow, ListRow, SegmentedControl } from './Controls';
+export { Checkbox, Chip, SwitchRow, ListRow, SegmentedControl } from './Controls';
+export { FaqItem } from './FaqItem';

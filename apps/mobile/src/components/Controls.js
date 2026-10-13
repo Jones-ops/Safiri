@@ -136,3 +136,32 @@ export function SegmentedControl({ options, value, onChange, accessibilityLabel 
     </View>
   );
 }
+
+/** Filter chip: selected state shown by fill AND a check icon, not colour alone. */
+export function Chip({ label, selected, onPress, icon }) {
+  const { c, radius, space } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={label}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: space.xs,
+        minHeight: touchTarget - 8,
+        paddingHorizontal: space.lg,
+        borderRadius: radius.chip,
+        borderWidth: 1,
+        borderColor: selected ? c.primary : c.inputBorder,
+        backgroundColor: selected ? c.primarySoft : c.surface,
+      }}
+    >
+      {selected ? <Ionicons name="checkmark" size={16} color={c.primary} /> : icon ? <Ionicons name={icon} size={16} color={c.textMuted} /> : null}
+      <AppText variant="label" tone={selected ? 'primary' : 'text'}>
+        {label}
+      </AppText>
+    </Pressable>
+  );
+}

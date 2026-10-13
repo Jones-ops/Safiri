@@ -24,6 +24,11 @@ const schema = z
     AT_SENDER_ID: optional, // alphanumeric sender ID once approved (paperwork track)
 
     SENTRY_DSN: optional,
+
+    // Android App Links: /.well-known/assetlinks.json lists the app and its signing key(s).
+    ANDROID_PACKAGE: z.string().default('ke.safiri.app'),
+    ANDROID_CERT_SHA256: optional, // comma-separated SHA-256 fingerprints (AA:BB:...)
+    PLAY_STORE_URL: z.url().default('https://play.google.com/store/apps/details?id=ke.safiri.app'),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;

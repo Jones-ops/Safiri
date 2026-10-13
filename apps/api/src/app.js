@@ -7,6 +7,7 @@ const Sentry = require('@sentry/node');
 const { createSupabaseAdmin, createTokenVerifier } = require('./integrations/supabase');
 const { createSmsClient } = require('./integrations/africastalking');
 const { createProfilesService } = require('./services/profiles');
+const { createCatalogue } = require('./services/catalogue');
 const { requireUser } = require('./lib/auth');
 
 async function buildApp(config, overrides = {}) {
@@ -36,6 +37,7 @@ async function buildApp(config, overrides = {}) {
       devMode: config.NODE_ENV !== 'production',
     }),
     profiles: overrides.profiles || createProfilesService(supabase),
+    catalogue: overrides.catalogue || createCatalogue(supabase),
   };
   deps.requireUser = requireUser(deps.verifyToken);
 
@@ -48,6 +50,7 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/health'), deps);
   await app.register(require('./routes/hooks'), deps);
   await app.register(require('./routes/me'), deps);
+  await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);
 

@@ -4,6 +4,11 @@
  */
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
+// The public web domain (Slice 1). Links to it open the app when it is installed (Android
+// App Links, verified through https://<host>/.well-known/assetlinks.json served by the API).
+const WEB_HOST = process.env.WEB_HOST || 'safiri.example';
+const APP_LINK_PATHS = ['/p/', '/d/', '/t/', '/i/', '/pay/'];
+
 const plugins = [
   'expo-router',
   'expo-localization',
@@ -41,11 +46,19 @@ module.exports = () => ({
     // Keep the install small and the permission list honest. Location and camera arrive with
     // the slices that need them (offline map, uploads).
     blockedPermissions: ['android.permission.RECORD_AUDIO', 'android.permission.SYSTEM_ALERT_WINDOW'],
-    // Android App Links for /p, /t, /i and /pay are added in Slice 1, once the domain exists.
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: APP_LINK_PATHS.map((pathPrefix) => ({ scheme: 'https', host: WEB_HOST, pathPrefix })),
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   ios: {
     bundleIdentifier: IS_DEV ? 'ke.safiri.app.dev' : 'ke.safiri.app',
     supportsTablet: false,
+    associatedDomains: [`applinks:${WEB_HOST}`], // iOS Universal Links (iOS store release is out of scope for Phase 1)
   },
   plugins,
   experiments: { typedRoutes: false },

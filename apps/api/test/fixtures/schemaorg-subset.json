@@ -1,0 +1,788 @@
+{
+ "source": "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+ "generated": "2026-10-13",
+ "types": {
+  "AggregateRating": {
+   "parents": [
+    "Rating"
+   ],
+   "properties": [
+    "itemReviewed",
+    "ratingCount",
+    "reviewCount"
+   ]
+  },
+  "Answer": {
+   "parents": [
+    "Comment"
+   ],
+   "properties": [
+    "answerExplanation",
+    "parentItem"
+   ]
+  },
+  "Brand": {
+   "parents": [
+    "cmns-cls:Classifier",
+    "Intangible"
+   ],
+   "properties": [
+    "aggregateRating",
+    "logo",
+    "review",
+    "slogan"
+   ]
+  },
+  "BreadcrumbList": {
+   "parents": [
+    "ItemList"
+   ],
+   "properties": []
+  },
+  "Comment": {
+   "parents": [
+    "CreativeWork"
+   ],
+   "properties": [
+    "downvoteCount",
+    "parentItem",
+    "sharedContent",
+    "upvoteCount"
+   ]
+  },
+  "ContactPoint": {
+   "parents": [
+    "StructuredValue"
+   ],
+   "properties": [
+    "areaServed",
+    "availableLanguage",
+    "contactOption",
+    "contactType",
+    "email",
+    "faxNumber",
+    "hoursAvailable",
+    "productSupported",
+    "telephone"
+   ]
+  },
+  "CreativeWork": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": [
+    "about",
+    "abstract",
+    "accessMode",
+    "accessModeSufficient",
+    "accessibilityAPI",
+    "accessibilityControl",
+    "accessibilityFeature",
+    "accessibilityHazard",
+    "accessibilitySummary",
+    "accountablePerson",
+    "acquireLicensePage",
+    "aggregateRating",
+    "alternativeHeadline",
+    "archivedAt",
+    "assesses",
+    "associatedMedia",
+    "audience",
+    "audio",
+    "author",
+    "award",
+    "character",
+    "citation",
+    "comment",
+    "commentCount",
+    "conditionsOfAccess",
+    "contentLocation",
+    "contentRating",
+    "contentReferenceTime",
+    "contributor",
+    "copyrightHolder",
+    "copyrightNotice",
+    "copyrightYear",
+    "correction",
+    "countryOfOrigin",
+    "creativeWorkStatus",
+    "creator",
+    "creditText",
+    "dateCreated",
+    "dateModified",
+    "datePublished",
+    "digitalSourceType",
+    "discussionUrl",
+    "displayLocation",
+    "editEIDR",
+    "editor",
+    "educationalAlignment",
+    "educationalLevel",
+    "educationalUse",
+    "encoding",
+    "encodingFormat",
+    "exampleOfWork",
+    "expires",
+    "funder",
+    "funding",
+    "genre",
+    "hasPart",
+    "headline",
+    "inLanguage",
+    "interactionStatistic",
+    "interactivityType",
+    "interpretedAsClaim",
+    "isAccessibleForFree",
+    "isBasedOn",
+    "isFamilyFriendly",
+    "isPartOf",
+    "keywords",
+    "learningResourceType",
+    "license",
+    "locationCreated",
+    "mainEntity",
+    "maintainer",
+    "material",
+    "materialExtent",
+    "mentions",
+    "offers",
+    "pattern",
+    "position",
+    "producer",
+    "provider",
+    "publication",
+    "publisher",
+    "publisherImprint",
+    "publishingPrinciples",
+    "recordedAt",
+    "releasedEvent",
+    "review",
+    "schemaVersion",
+    "sdDatePublished",
+    "sdLicense",
+    "sdPublisher",
+    "size",
+    "sourceOrganization",
+    "spatial",
+    "spatialCoverage",
+    "sponsor",
+    "teaches",
+    "temporal",
+    "temporalCoverage",
+    "text",
+    "thumbnail",
+    "thumbnailUrl",
+    "timeRequired",
+    "translationOfWork",
+    "translator",
+    "typicalAgeRange",
+    "usageInfo",
+    "version",
+    "video",
+    "wordCount",
+    "workExample",
+    "workTranslation"
+   ]
+  },
+  "FAQPage": {
+   "parents": [
+    "WebPage"
+   ],
+   "properties": []
+  },
+  "GeoCoordinates": {
+   "parents": [
+    "StructuredValue"
+   ],
+   "properties": [
+    "address",
+    "addressCountry",
+    "elevation",
+    "latitude",
+    "longitude",
+    "postalCode"
+   ]
+  },
+  "ImageObject": {
+   "parents": [
+    "MediaObject"
+   ],
+   "properties": [
+    "caption",
+    "embeddedTextCaption",
+    "exifData",
+    "representativeOfPage"
+   ]
+  },
+  "Intangible": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": []
+  },
+  "ItemList": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": [
+    "aggregateElement",
+    "itemListElement",
+    "itemListOrder",
+    "numberOfItems"
+   ]
+  },
+  "ListItem": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": [
+    "item",
+    "nextItem",
+    "position",
+    "previousItem"
+   ]
+  },
+  "LocalBusiness": {
+   "parents": [
+    "Organization",
+    "Place"
+   ],
+   "properties": [
+    "currenciesAccepted",
+    "floorLevel",
+    "openingHours",
+    "paymentAccepted",
+    "priceRange"
+   ]
+  },
+  "LodgingBusiness": {
+   "parents": [
+    "LocalBusiness"
+   ],
+   "properties": [
+    "amenityFeature",
+    "audience",
+    "availableLanguage",
+    "checkinTime",
+    "checkoutTime",
+    "numberOfRooms",
+    "petsAllowed",
+    "starRating"
+   ]
+  },
+  "MediaObject": {
+   "parents": [
+    "CreativeWork"
+   ],
+   "properties": [
+    "associatedArticle",
+    "bitrate",
+    "contentSize",
+    "contentUrl",
+    "duration",
+    "embedUrl",
+    "encodesCreativeWork",
+    "encodingFormat",
+    "endTime",
+    "height",
+    "ineligibleRegion",
+    "interpretedAsClaim",
+    "playerType",
+    "productionCompany",
+    "regionsAllowed",
+    "requiresSubscription",
+    "sha256",
+    "startTime",
+    "uploadDate",
+    "width"
+   ]
+  },
+  "Offer": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": [
+    "acceptedPaymentMethod",
+    "addOn",
+    "additionalProperty",
+    "advanceBookingRequirement",
+    "aggregateRating",
+    "areaServed",
+    "asin",
+    "availability",
+    "availabilityEnds",
+    "availabilityStarts",
+    "availableAtOrFrom",
+    "availableDeliveryMethod",
+    "businessFunction",
+    "category",
+    "checkoutPageURLTemplate",
+    "deliveryLeadTime",
+    "eligibleCustomerType",
+    "eligibleDuration",
+    "eligibleQuantity",
+    "eligibleRegion",
+    "eligibleTransactionVolume",
+    "gtin",
+    "gtin12",
+    "gtin13",
+    "gtin14",
+    "gtin8",
+    "hasAdultConsideration",
+    "hasDigitalProductPassport",
+    "hasGS1DigitalLink",
+    "hasMeasurement",
+    "hasMerchantReturnPolicy",
+    "includesObject",
+    "ineligibleRegion",
+    "inventoryLevel",
+    "isFamilyFriendly",
+    "itemCondition",
+    "itemOffered",
+    "itemPopularity",
+    "leaseLength",
+    "mobileUrl",
+    "mpn",
+    "offeredBy",
+    "price",
+    "priceCurrency",
+    "priceSpecification",
+    "priceValidUntil",
+    "review",
+    "seller",
+    "serialNumber",
+    "shippingDetails",
+    "sku",
+    "validForMemberTier",
+    "validFrom",
+    "validThrough",
+    "warranty"
+   ]
+  },
+  "Organization": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": [
+    "acceptedPaymentMethod",
+    "actionableFeedbackPolicy",
+    "address",
+    "agentInteractionStatistic",
+    "aggregateRating",
+    "alumni",
+    "areaServed",
+    "authorizedRepresentative",
+    "award",
+    "brand",
+    "companyRegistration",
+    "contactPoint",
+    "correctionsPolicy",
+    "department",
+    "dissolutionDate",
+    "diversityPolicy",
+    "diversityStaffingReport",
+    "duns",
+    "email",
+    "employee",
+    "ethicsPolicy",
+    "event",
+    "faxNumber",
+    "founder",
+    "foundingDate",
+    "foundingLocation",
+    "funder",
+    "funding",
+    "globalLocationNumber",
+    "hasCertification",
+    "hasCredential",
+    "hasGS1DigitalLink",
+    "hasMemberProgram",
+    "hasMerchantReturnPolicy",
+    "hasOfferCatalog",
+    "hasPOS",
+    "hasShippingService",
+    "interactionStatistic",
+    "isicV4",
+    "iso6523Code",
+    "keywords",
+    "knowsAbout",
+    "knowsLanguage",
+    "legalAddress",
+    "legalName",
+    "legalRepresentative",
+    "leiCode",
+    "location",
+    "logo",
+    "makesOffer",
+    "member",
+    "memberOf",
+    "naics",
+    "nonprofitStatus",
+    "numberOfEmployees",
+    "ownershipFundingInfo",
+    "owns",
+    "parentOrganization",
+    "publishingPrinciples",
+    "review",
+    "seeks",
+    "skills",
+    "slogan",
+    "sponsor",
+    "subOrganization",
+    "taxID",
+    "telephone",
+    "unnamedSourcesPolicy",
+    "vatID"
+   ]
+  },
+  "Person": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": [
+    "additionalName",
+    "address",
+    "affiliation",
+    "agentInteractionStatistic",
+    "alumniOf",
+    "award",
+    "birthDate",
+    "birthPlace",
+    "brand",
+    "callSign",
+    "children",
+    "colleague",
+    "contactPoint",
+    "deathDate",
+    "deathPlace",
+    "duns",
+    "email",
+    "familyName",
+    "faxNumber",
+    "follows",
+    "funder",
+    "funding",
+    "gender",
+    "givenName",
+    "globalLocationNumber",
+    "hasCertification",
+    "hasCredential",
+    "hasOccupation",
+    "hasOfferCatalog",
+    "hasPOS",
+    "height",
+    "homeLocation",
+    "honorificPrefix",
+    "honorificSuffix",
+    "interactionStatistic",
+    "isicV4",
+    "jobTitle",
+    "knows",
+    "knowsAbout",
+    "knowsLanguage",
+    "lifeEvent",
+    "makesOffer",
+    "memberOf",
+    "naics",
+    "nationality",
+    "netWorth",
+    "owns",
+    "parent",
+    "performerIn",
+    "pronouns",
+    "publishingPrinciples",
+    "relatedTo",
+    "seeks",
+    "sibling",
+    "skills",
+    "sponsor",
+    "spouse",
+    "taxID",
+    "telephone",
+    "vatID",
+    "weight",
+    "workLocation",
+    "worksFor"
+   ]
+  },
+  "Place": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": [
+    "additionalProperty",
+    "address",
+    "aggregateRating",
+    "amenityFeature",
+    "branchCode",
+    "containedInPlace",
+    "containsPlace",
+    "event",
+    "faxNumber",
+    "geo",
+    "geoContains",
+    "geoCoveredBy",
+    "geoCovers",
+    "geoCrosses",
+    "geoDisjoint",
+    "geoEquals",
+    "geoIntersects",
+    "geoOverlaps",
+    "geoTouches",
+    "geoWithin",
+    "globalLocationNumber",
+    "hasCertification",
+    "hasDriveThroughService",
+    "hasGS1DigitalLink",
+    "hasMap",
+    "isAccessibleForFree",
+    "isicV4",
+    "keywords",
+    "latitude",
+    "logo",
+    "longitude",
+    "maximumAttendeeCapacity",
+    "openingHoursSpecification",
+    "photo",
+    "publicAccess",
+    "review",
+    "slogan",
+    "smokingAllowed",
+    "specialOpeningHoursSpecification",
+    "telephone",
+    "tourBookingPage"
+   ]
+  },
+  "PostalAddress": {
+   "parents": [
+    "ContactPoint"
+   ],
+   "properties": [
+    "addressCountry",
+    "addressLocality",
+    "addressRegion",
+    "extendedAddress",
+    "postOfficeBoxNumber",
+    "postalCode",
+    "streetAddress"
+   ]
+  },
+  "Product": {
+   "parents": [
+    "Thing"
+   ],
+   "properties": [
+    "additionalProperty",
+    "aggregateRating",
+    "asin",
+    "audience",
+    "authorizedRepresentative",
+    "award",
+    "brand",
+    "category",
+    "color",
+    "colorSwatch",
+    "consumerNotice",
+    "countryOfAssembly",
+    "countryOfLastProcessing",
+    "countryOfOrigin",
+    "depth",
+    "displayLocation",
+    "funding",
+    "gtin",
+    "gtin12",
+    "gtin13",
+    "gtin14",
+    "gtin8",
+    "hasAdultConsideration",
+    "hasCertification",
+    "hasDigitalProductPassport",
+    "hasEnergyConsumptionDetails",
+    "hasGS1DigitalLink",
+    "hasMeasurement",
+    "hasMerchantReturnPolicy",
+    "height",
+    "importer",
+    "inProductGroupWithID",
+    "isAccessoryOrSparePartFor",
+    "isConsumableFor",
+    "isFamilyFriendly",
+    "isOftenBoughtWith",
+    "isRelatedTo",
+    "isSimilarTo",
+    "isVariantOf",
+    "itemCondition",
+    "keywords",
+    "logo",
+    "manufacturer",
+    "material",
+    "mobileUrl",
+    "model",
+    "mpn",
+    "negativeNotes",
+    "nsn",
+    "offers",
+    "pattern",
+    "positiveNotes",
+    "productID",
+    "productionDate",
+    "purchaseDate",
+    "recycledContentPercentage",
+    "releaseDate",
+    "review",
+    "size",
+    "sku",
+    "slogan",
+    "specification",
+    "substanceOfConcern",
+    "weight",
+    "width"
+   ]
+  },
+  "QuantitativeValue": {
+   "parents": [
+    "StructuredValue"
+   ],
+   "properties": [
+    "additionalProperty",
+    "maxValue",
+    "minValue",
+    "unitCode",
+    "unitText",
+    "value",
+    "valueReference"
+   ]
+  },
+  "Question": {
+   "parents": [
+    "Comment"
+   ],
+   "properties": [
+    "acceptedAnswer",
+    "answerCount",
+    "eduQuestionType",
+    "parentItem",
+    "suggestedAnswer"
+   ]
+  },
+  "Rating": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": [
+    "author",
+    "bestRating",
+    "ratingExplanation",
+    "ratingValue",
+    "reviewAspect",
+    "worstRating"
+   ]
+  },
+  "Review": {
+   "parents": [
+    "CreativeWork"
+   ],
+   "properties": [
+    "associatedClaimReview",
+    "associatedMediaReview",
+    "associatedReview",
+    "itemReviewed",
+    "negativeNotes",
+    "positiveNotes",
+    "reviewAspect",
+    "reviewBody",
+    "reviewRating"
+   ]
+  },
+  "StructuredValue": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": []
+  },
+  "Thing": {
+   "parents": [],
+   "properties": [
+    "additionalType",
+    "alternateName",
+    "description",
+    "disambiguatingDescription",
+    "identifier",
+    "image",
+    "mainEntityOfPage",
+    "name",
+    "owner",
+    "potentialAction",
+    "sameAs",
+    "subjectOf",
+    "url"
+   ]
+  },
+  "TouristDestination": {
+   "parents": [
+    "Place"
+   ],
+   "properties": [
+    "includesAttraction",
+    "touristType"
+   ]
+  },
+  "TouristTrip": {
+   "parents": [
+    "Trip"
+   ],
+   "properties": [
+    "touristType"
+   ]
+  },
+  "TravelAgency": {
+   "parents": [
+    "LocalBusiness"
+   ],
+   "properties": []
+  },
+  "Trip": {
+   "parents": [
+    "Intangible"
+   ],
+   "properties": [
+    "arrivalTime",
+    "departureTime",
+    "itinerary",
+    "offers",
+    "partOfTrip",
+    "provider",
+    "subTrip",
+    "tripOrigin"
+   ]
+  },
+  "WebPage": {
+   "parents": [
+    "CreativeWork"
+   ],
+   "properties": [
+    "breadcrumb",
+    "lastReviewed",
+    "mainContentOfPage",
+    "primaryImageOfPage",
+    "relatedLink",
+    "reviewedBy",
+    "significantLink",
+    "speakable",
+    "specialty"
+   ]
+  },
+  "WebSite": {
+   "parents": [
+    "CreativeWork"
+   ],
+   "properties": [
+    "issn"
+   ]
+  },
+  "cmns-cls:Classifier": {
+   "parents": [],
+   "properties": []
+  }
+ }
+}

@@ -5,7 +5,7 @@ from Nairobi to Naivasha, the Maasai Mara, Diani and Amboseli. KES only, M-PESA 
 
 The full plan (design system, data model, slices, paperwork track) is the build plan document
 "Safiri: Build Plan, Prompt and First Results" (13 Oct 2026).
-This repo is at the end of **Slice 0: Foundation**.
+Done: **Slice 0 (Foundation)** and **Slice 1 (Discover)**. Next: Slice 2 (trip builder, quotes, 15-minute holds).
 
 ## What's here
 
@@ -16,7 +16,7 @@ apps/
 packages/
   shared/     price calculator, phone numbers, booking states, zod schemas, en/sw strings
 supabase/
-  migrations/ tables, constraints, RLS policies (7 files)
+  migrations/ tables, constraints, RLS policies, public photo bucket
   seed/       seed data (data.js) and the generator that writes seed.sql
   tests/      schema and RLS tests, run in PGlite (no Docker needed)
 .github/workflows/ci.yml   lint, tests, bundle secrets check, EAS preview build
@@ -61,6 +61,15 @@ npm run api                              # http://localhost:3000/health
 ```
 
 With no Africa's Talking keys in development, OTP texts are written to the API log instead of sent.
+
+The API also serves the public web pages: `/` (home), `/d/naivasha`, `/p/naivasha-lakeside-weekend`,
+`/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/privacy`. Add `?lang=sw` for Kiswahili. Upload the
+destination photos to Supabase Storage once (needs the service-role key in `apps/api/.env`):
+
+```sh
+npm run photos:upload --workspace @safiri/api
+```
+
 Daraja callbacks (Slice 3a) need a public HTTPS URL: `npx cloudflared tunnel --url http://localhost:3000`.
 
 ### 4. App
@@ -83,6 +92,17 @@ npm run db:seed           # regenerate supabase/seed.sql after editing supabase/
 cd apps/mobile && npm run export:android && npm run check:bundle   # bundle + secrets scan
 ```
 
+## App Links (package links open the app)
+
+1. Buy the domain (paperwork track) and point it at the API.
+2. Set `PUBLIC_BASE_URL=https://<domain>` for the API, and `EXPO_PUBLIC_WEB_URL` and `WEB_HOST` for app builds.
+3. Get the signing key fingerprint with `eas credentials` and set `ANDROID_CERT_SHA256` for the API.
+4. Open `https://<domain>/.well-known/assetlinks.json`, install the build, then on the phone run
+   `adb shell pm get-app-links ke.safiri.app`: the domain should show as `verified`.
+
+Structured data is checked in CI against the schema.org vocabulary (`apps/api/test/jsonld.test.js`).
+After using a new schema.org type, run `npm run schema:refresh --workspace @safiri/api`.
+
 ## Rules that hold everywhere
 
 - **Money is integer KES.** One rounding rule, in `packages/shared/src/money.js`: margin rounds
@@ -99,6 +119,7 @@ cd apps/mobile && npm run export:android && npm run check:bundle   # bundle + se
 
 ## Photos
 
-Background photos are in `apps/mobile/assets/images/backgrounds/` with `CREDITS.md`. Two are
-bundled (Welcome, Explore); the rest go to Supabase Storage in Slice 1. The licences require
+Background photos are in `apps/mobile/assets/images/backgrounds/` (1280px) and `.../640/`, with
+`CREDITS.md`. Two are bundled in the app (Welcome, Explore header); the app and web pages load the
+rest from the `public-images` Storage bucket (`npm run photos:upload`), 640px in lists and data saver. The licences require
 credit, which the app shows under Profile > Photo credits.
