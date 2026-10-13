@@ -1,0 +1,172 @@
+{
+  "common": {
+    "continue": "Endelea",
+    "retry": "Jaribu tena",
+    "cancel": "Ghairi",
+    "save": "Hifadhi",
+    "loading": "Inapakia",
+    "perPerson": "kwa mtu mmoja",
+    "or": "au",
+    "skip": "Ruka kwa sasa",
+    "back": "Rudi",
+    "notConfigured": "Toleo hili bado halijaunganishwa na Safiri. Ongeza mipangilio ya Supabase kwenye apps/mobile/.env."
+  },
+  "welcome": {
+    "title": "Safari za wikendi unazoweza kulipia kidogo kidogo",
+    "subtitle": "Weka nafasi Naivasha, Mara, Diani au Amboseli na ulipe kwa awamu kupitia M-PESA.",
+    "language": "Lugha",
+    "lowData": "Okoa data",
+    "lowDataHint": "Picha ndogo, video hucheza ukibonyeza tu",
+    "consentTitle": "Data yako, chaguo lako",
+    "consent": {
+      "booking": "Tumia namba yangu ya simu kuweka nafasi na kupokea malipo (inahitajika)",
+      "notifications": "Nitumie vikumbusho vya malipo na safari kwa arifa, WhatsApp au SMS",
+      "analytics": "Saidia kuboresha Safiri kwa data ya matumizi isiyonitambulisha",
+      "marketing": "Nitumie ofa na zawadi za kualika marafiki"
+    },
+    "privacyLink": "Soma ilani ya faragha",
+    "consentRequired": "Weka alama kwenye kisanduku cha kwanza ili kuendelea. Hatuwezi kupokea nafasi bila hiyo."
+  },
+  "auth": {
+    "phoneTitle": "Namba yako ya M-PESA",
+    "phoneHint": "Tutakutumia nambari ya siri yenye tarakimu 6. Namba hii ndiyo akaunti yako.",
+    "phoneLabel": "Namba ya simu",
+    "sendCode": "Tuma nambari",
+    "otpTitle": "Weka nambari ya siri",
+    "otpHint": "Tumeituma kwa {{phone}}",
+    "otpLabel": "Nambari ya tarakimu 6",
+    "verify": "Thibitisha",
+    "resend": "Tuma nambari mpya",
+    "resendIn": "Tuma nambari mpya baada ya sekunde {{seconds}}",
+    "changeNumber": "Badilisha namba",
+    "signOut": "Ondoka"
+  },
+  "errors": {
+    "phone": {
+      "invalid": "Weka namba ya simu ya Kenya, kama 0712 345 678"
+    },
+    "otp": {
+      "invalid": "Nambari ina tarakimu 6",
+      "wrong": "Nambari hiyo haikufanya kazi. Iangalie au tuma mpya."
+    },
+    "network": "Hakuna mtandao. Angalia data au Wi-Fi yako kisha ujaribu tena.",
+    "generic": "Kuna tatizo. Tafadhali jaribu tena."
+  },
+  "tabs": {
+    "explore": "Gundua",
+    "trips": "Safari",
+    "pay": "Lipa",
+    "profile": "Wasifu"
+  },
+  "explore": {
+    "title": "Twende wapi wikendi hii?",
+    "emptyTitle": "Safari zinakuja",
+    "emptyBody": "Vifurushi vya Naivasha, Mara, Diani na Amboseli vinakuja katika toleo lijalo.",
+    "destinations": "Maeneo",
+    "couldNotLoad": "Imeshindwa kupakia maeneo."
+  },
+  "trips": {
+    "title": "Safari zako",
+    "emptyTitle": "Bado huna safari",
+    "emptyBody": "Ukiweka nafasi, safari yako, malipo na ratiba isiyohitaji mtandao vitakuwa hapa.",
+    "emptyAction": "Gundua safari",
+    "yourTrip": "Safari yako"
+  },
+  "pay": {
+    "title": "Malipo",
+    "emptyTitle": "Hakuna cha kulipa",
+    "emptyBody": "Amana na awamu zako zitaonekana hapa, na kitufe cha M-PESA cha kubonyeza mara moja."
+  },
+  "profile": {
+    "title": "Wasifu",
+    "signedInAs": "Umeingia kama {{phone}}",
+    "notSignedIn": "Hujaingia",
+    "signIn": "Ingia kwa simu yako",
+    "language": "Lugha",
+    "lowData": "Okoa data",
+    "notifications": "Vikumbusho",
+    "downloadData": "Pakua data yangu",
+    "deleteAccount": "Futa akaunti yangu",
+    "switchMode": "Badilisha hali",
+    "photoCredits": "Wapiga picha",
+    "designSystem": "Mfumo wa muundo (wasanidi)",
+    "comingSoon": "Inakuja katika toleo lijalo. Kwa sasa, tuma barua pepe kwa privacy@safiri.example na tutalishughulikia ndani ya siku 30.",
+    "mode": "Hali",
+    "about": "Kuhusu",
+    "privacy": "Ilani ya faragha"
+  },
+  "price": {
+    "perPerson": "{{amount}} kwa mtu mmoja",
+    "orInstalments": "au {{times}} x {{amount}}",
+    "payInInstalments": "Lipa kwa awamu",
+    "splitWithFriends": "Gawanya na marafiki",
+    "bookNow": "Weka nafasi sasa"
+  },
+  "mpesa": {
+    "checkPhone": "Angalia simu yako na uweke PIN yako ya M-PESA",
+    "sending": "Tunatuma ombi kwa {{phone}}",
+    "waiting": "Tunasubiri PIN yako",
+    "paid": "Imelipwa",
+    "failed": "Malipo hayakufaulu",
+    "timedOut": "Hatujapata jibu kutoka M-PESA",
+    "changeNumber": "Tumia namba nyingine",
+    "amount": "Kiasi"
+  },
+  "status": {
+    "paid": "Imelipwa",
+    "due": "Inadaiwa",
+    "dueSoon": "Inakaribia",
+    "overdue": "Imechelewa",
+    "pending": "Inasubiri",
+    "failed": "Imeshindwa",
+    "notPaid": "Haijalipwa"
+  },
+  "trust": {
+    "verified": "Imethibitishwa",
+    "licence": "Leseni {{number}}"
+  },
+  "offline": {
+    "available": "Inapatikana bila mtandao",
+    "savedAgo": "Inapatikana bila mtandao, ilihifadhiwa {{time}}",
+    "youAreOffline": "Huna mtandao. Tunaonyesha kilichohifadhiwa kwenye simu yako."
+  },
+  "provider": {
+    "accept": "Kubali",
+    "decline": "Kataa"
+  },
+  "time": {
+    "justNow": "sasa hivi",
+    "minuteAgo": "dakika {{n}} iliyopita",
+    "minutesAgo": "dakika {{n}} zilizopita",
+    "hourAgo": "saa {{n}} iliyopita",
+    "hoursAgo": "saa {{n}} zilizopita",
+    "dayAgo": "siku {{n}} iliyopita",
+    "daysAgo": "siku {{n}} zilizopita"
+  },
+  "privacy": {
+    "title": "Ilani ya faragha",
+    "intro": "Safiri (mdhibiti wa data) hutumia data binafsi kidogo iwezekanavyo. Namba yako ya simu ndiyo akaunti yako.",
+    "whatTitle": "Tunachohifadhi na kwa nini",
+    "what": "Namba yako ya simu na jina lako, ili kuweka nafasi, kupokea malipo ya M-PESA na kutuma risiti. Kumbukumbu za safari na malipo, kwa sababu sheria za kodi na za watumiaji zinazihitaji. Data ya matumizi, ukiruhusu tu, ili kuboresha programu.",
+    "shareTitle": "Tunashirikiana na nani",
+    "share": "Hoteli, waongozaji na madereva wa safari yako (jina na simu yako tu), Safaricom M-PESA kwa malipo, na huduma za SMS na WhatsApp zinazotuma nambari na vikumbusho vyako. Hatuuzi data yako kamwe.",
+    "rightsTitle": "Haki zako",
+    "rights": "Unaweza kuondoa idhini yoyote ya hiari, kupakua data yako, au kuomba tufute akaunti yako kutoka Wasifu. Tunajibu ndani ya siku 30. Kumbukumbu za nafasi na malipo huhifadhiwa kwa miaka 7 kama sheria inavyotaka, kisha hufutwa.",
+    "contact": "Maswali au malalamiko: privacy@safiri.example, au Ofisi ya Kamishna wa Ulinzi wa Data (odpc.go.ke)."
+  },
+  "credits": {
+    "title": "Wapiga picha",
+    "intro": "Picha kutoka Wikimedia Commons, zinatumika chini ya leseni za Creative Commons.",
+    "by": "Picha: {{name}}",
+    "licence": "Leseni: {{licence}}"
+  },
+  "designSystem": {
+    "title": "Mfumo wa muundo",
+    "note": "Kila kipengele kikuu katika hali ya mwanga au giza, kufuata mpangilio wa simu yako."
+  },
+  "pkg": {
+    "dayTrip": "Safari ya siku moja",
+    "oneNight": "Usiku 1",
+    "nights": "Usiku {{n}}"
+  }
+}

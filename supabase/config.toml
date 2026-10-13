@@ -1,0 +1,64 @@
+# Supabase CLI settings for local development (`npx supabase start`).
+# Hosted projects are configured in the dashboard; keep the two in step (see README).
+
+project_id = "safiri"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["safiri://"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+# The phone number is the identity: sign in by SMS one-time code only.
+[auth.email]
+enable_signup = false
+
+[auth.sms]
+enable_signup = true
+enable_confirmations = true
+template = "Your Safiri code is {{ .Code }}"
+max_frequency = "60s"
+
+# Seeded numbers sign in with a fixed code, so local demos need no SMS credit.
+# Never add test OTPs to a hosted project.
+[auth.sms.test_otp]
+254700000001 = "123456"
+254700000002 = "123456"
+254700000003 = "123456"
+254700000021 = "123456"
+254700000101 = "123456"
+
+# OTP texts are sent by our API through Africa's Talking (Send SMS hook).
+# The secret must match SEND_SMS_HOOK_SECRET in apps/api/.env.
+[auth.hook.send_sms]
+enabled = true
+uri = "http://host.docker.internal:3000/hooks/send-sms"
+secrets = "env(SEND_SMS_HOOK_SECRET)"

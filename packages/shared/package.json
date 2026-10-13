@@ -1,0 +1,13 @@
+{
+  "name": "@safiri/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Code shared by the Safiri app and API: prices, phone numbers, states, schemas, strings",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "common": {
+    "continue": "Continue",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading",
+    "perPerson": "per person",
+    "or": "or",
+    "skip": "Skip for now",
+    "back": "Back",
+    "notConfigured": "This build isn't connected to Safiri yet. Add the Supabase settings to apps/mobile/.env."
+  },
+  "welcome": {
+    "title": "Weekend getaways you can pay for bit by bit",
+    "subtitle": "Book Naivasha, the Mara, Diani or Amboseli and pay in instalments with M-PESA.",
+    "language": "Language",
+    "lowData": "Save data",
+    "lowDataHint": "Smaller photos, videos only when you tap",
+    "consentTitle": "Your data, your choice",
+    "consent": {
+      "booking": "Use my phone number to make bookings and take payments (needed)",
+      "notifications": "Send me payment and trip reminders by push, WhatsApp or SMS",
+      "analytics": "Help improve Safiri with anonymous usage data",
+      "marketing": "Send me offers and referral rewards"
+    },
+    "privacyLink": "Read the privacy notice",
+    "consentRequired": "Tick the first box to continue. We can't take bookings without it."
+  },
+  "auth": {
+    "phoneTitle": "Your M-PESA number",
+    "phoneHint": "We'll text you a 6-digit code. This number is your account.",
+    "phoneLabel": "Phone number",
+    "sendCode": "Send code",
+    "otpTitle": "Enter the code",
+    "otpHint": "We sent it to {{phone}}",
+    "otpLabel": "6-digit code",
+    "verify": "Confirm",
+    "resend": "Send a new code",
+    "resendIn": "Send a new code in {{seconds}}s",
+    "changeNumber": "Change number",
+    "signOut": "Sign out"
+  },
+  "errors": {
+    "phone": {
+      "invalid": "Enter a Kenyan mobile number, like 0712 345 678"
+    },
+    "otp": {
+      "invalid": "The code is 6 digits",
+      "wrong": "That code didn't work. Check it or send a new one."
+    },
+    "network": "No connection. Check your data or Wi-Fi and try again.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "tabs": {
+    "explore": "Explore",
+    "trips": "Trips",
+    "pay": "Pay",
+    "profile": "Profile"
+  },
+  "explore": {
+    "title": "Where to this weekend?",
+    "emptyTitle": "Trips are on the way",
+    "emptyBody": "Packages for Naivasha, the Mara, Diani and Amboseli arrive in the next update.",
+    "destinations": "Destinations",
+    "couldNotLoad": "Couldn't load destinations."
+  },
+  "trips": {
+    "title": "Your trips",
+    "emptyTitle": "No trips yet",
+    "emptyBody": "When you book, your trip, payments and offline itinerary live here.",
+    "emptyAction": "Explore trips",
+    "yourTrip": "Your trip"
+  },
+  "pay": {
+    "title": "Payments",
+    "emptyTitle": "Nothing to pay",
+    "emptyBody": "Your deposits and instalments will show here, with a one-tap M-PESA button."
+  },
+  "profile": {
+    "title": "Profile",
+    "signedInAs": "Signed in as {{phone}}",
+    "notSignedIn": "Not signed in",
+    "signIn": "Sign in with your phone",
+    "language": "Language",
+    "lowData": "Save data",
+    "notifications": "Reminders",
+    "downloadData": "Download my data",
+    "deleteAccount": "Delete my account",
+    "switchMode": "Switch mode",
+    "photoCredits": "Photo credits",
+    "designSystem": "Design system (developers)",
+    "comingSoon": "Coming in a later update. Until then, email privacy@safiri.example and we will do it within 30 days.",
+    "mode": "Mode",
+    "about": "About",
+    "privacy": "Privacy notice"
+  },
+  "price": {
+    "perPerson": "{{amount}} per person",
+    "orInstalments": "or {{times}} x {{amount}}",
+    "payInInstalments": "Pay in instalments",
+    "splitWithFriends": "Split with friends",
+    "bookNow": "Book now"
+  },
+  "mpesa": {
+    "checkPhone": "Check your phone and enter your M-PESA PIN",
+    "sending": "Sending the request to {{phone}}",
+    "waiting": "Waiting for your PIN",
+    "paid": "Paid",
+    "failed": "Payment didn't go through",
+    "timedOut": "We didn't hear back from M-PESA",
+    "changeNumber": "Use a different number",
+    "amount": "Amount"
+  },
+  "status": {
+    "paid": "Paid",
+    "due": "Due",
+    "dueSoon": "Due soon",
+    "overdue": "Overdue",
+    "pending": "Waiting",
+    "failed": "Failed",
+    "notPaid": "Not paid"
+  },
+  "trust": {
+    "verified": "Verified",
+    "licence": "Licence {{number}}"
+  },
+  "offline": {
+    "available": "Available offline",
+    "savedAgo": "Available offline, saved {{time}}",
+    "youAreOffline": "You're offline. Showing what's saved on your phone."
+  },
+  "provider": {
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "time": {
+    "justNow": "just now",
+    "minuteAgo": "{{n}} minute ago",
+    "minutesAgo": "{{n}} minutes ago",
+    "hourAgo": "{{n}} hour ago",
+    "hoursAgo": "{{n}} hours ago",
+    "dayAgo": "{{n}} day ago",
+    "daysAgo": "{{n}} days ago"
+  },
+  "privacy": {
+    "title": "Privacy notice",
+    "intro": "Safiri (the data controller) uses as little personal data as it can. Your phone number is your account.",
+    "whatTitle": "What we keep and why",
+    "what": "Your phone number and name, to make bookings, take M-PESA payments and send receipts. Trip and payment records, because tax and consumer law require them. Usage data, only if you allow it, to improve the app.",
+    "shareTitle": "Who we share it with",
+    "share": "The lodges, guides and drivers on your trip (your name and phone only), Safaricom M-PESA for payments, and the SMS and WhatsApp services that send your codes and reminders. We never sell your data.",
+    "rightsTitle": "Your rights",
+    "rights": "You can withdraw any optional consent, download your data, or ask us to delete your account from Profile. We answer within 30 days. Booking and payment records are kept for 7 years as the law requires, then deleted.",
+    "contact": "Questions or complaints: privacy@safiri.example, or the Office of the Data Protection Commissioner (odpc.go.ke)."
+  },
+  "credits": {
+    "title": "Photo credits",
+    "intro": "Photos from Wikimedia Commons, used under Creative Commons licences.",
+    "by": "Photo: {{name}}",
+    "licence": "Licence: {{licence}}"
+  },
+  "designSystem": {
+    "title": "Design system",
+    "note": "Every core component in light or dark mode, following your phone setting."
+  },
+  "pkg": {
+    "dayTrip": "Day trip",
+    "oneNight": "1 night",
+    "nights": "{{n}} nights"
+  }
+}

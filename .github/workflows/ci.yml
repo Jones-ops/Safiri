@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint and test (shared, database + RLS, API)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  mobile-bundle:
+    name: Bundle the app and check it holds no secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check Expo dependency versions
+        working-directory: apps/mobile
+        run: npx expo install --check
+      - name: Export the Android JS bundle
+        working-directory: apps/mobile
+        run: npm run export:android
+      - name: No secrets in the app bundle
+        working-directory: apps/mobile
+        run: npm run check:bundle
+
+  eas-preview:
+    name: EAS preview build (Android)
+    needs: [test, mobile-bundle]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip when EXPO_TOKEN is not configured
+        id: token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: echo "present=$([ -n "$EXPO_TOKEN" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.present == 'yes'
+      - uses: actions/setup-node@v4
+        if: steps.token.outputs.present == 'yes'
+        with:
+          node-version: 24
+          cache: npm
+      - uses: expo/expo-github-action@v8
+        if: steps.token.outputs.present == 'yes'
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+        if: steps.token.outputs.present == 'yes'
+      - name: Start the preview build (APK for testers)
+        if: steps.token.outputs.present == 'yes'
+        working-directory: apps/mobile
+        run: eas build --profile preview --platform android --non-interactive --no-wait

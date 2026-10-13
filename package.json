@@ -1,0 +1,29 @@
+{
+  "name": "safiri",
+  "private": true,
+  "description": "Safiri: book, pay and travel Kenya in one app",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "api": "npm run dev --workspace @safiri/api",
+    "mobile": "npm run start --workspace @safiri/mobile",
+    "lint": "eslint .",
+    "test": "npm run test:shared && npm run test:db && npm run test:api",
+    "test:shared": "npm test --workspace @safiri/shared",
+    "test:api": "npm test --workspace @safiri/api",
+    "test:db": "node --test \"supabase/tests/**/*.test.js\"",
+    "db:seed": "node supabase/seed/generate.js",
+    "db:check": "node supabase/tests/apply.js"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.9",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0"
+  }
+}
