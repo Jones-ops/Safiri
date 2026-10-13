@@ -32,4 +32,38 @@ const profileUpdateSchema = z
   })
   .strict();
 
-module.exports = { msisdnSchema, otpSchema, languageSchema, consentsSchema, profileUpdateSchema, z };
+const slugSchema = z.string().regex(/^[a-z0-9-]{1,80}$/);
+const isoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'date.invalid');
+
+/**
+ * Ask the API for a price. Either a package (its items are fixed) or a custom trip from the
+ * builder (a destination, a number of nights, and chosen listings with the day they happen).
+ */
+const quoteRequestSchema = z
+  .object({
+    packageSlug: slugSchema.optional(),
+    destinationSlug: slugSchema.optional(),
+    nights: z.number().int().min(0).max(14).optional(),
+    items: z
+      .array(z.object({ listingId: z.uuid(), day: z.number().int().min(1).max(15), qty: z.number().int().min(1).max(14) }))
+      .max(20)
+      .optional(),
+    startDate: isoDateSchema,
+    travellers: z.number().int().min(1).max(20),
+  })
+  .strict()
+  .refine((r) => Boolean(r.packageSlug) !== Boolean(r.destinationSlug), { message: 'quote.packageOrDestination' })
+  .refine((r) => !r.destinationSlug || (r.items?.length && r.nights !== undefined), { message: 'quote.customNeedsItems' });
+
+const holdRequestSchema = z.object({ quoteId: z.uuid(), phone: msisdnSchema }).strict();
+
+module.exports = {
+  msisdnSchema,
+  otpSchema,
+  languageSchema,
+  consentsSchema,
+  profileUpdateSchema,
+  quoteRequestSchema,
+  holdRequestSchema,
+  z,
+};

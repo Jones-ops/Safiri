@@ -15,6 +15,7 @@ const users = {
 const destinations = {
   naivasha: {
     slug: 'naivasha',
+    driveHours: 2, // one way from Nairobi
     name: 'Naivasha',
     region: 'Nakuru County',
     lat: -0.7167,
@@ -35,6 +36,7 @@ const destinations = {
   },
   mara: {
     slug: 'maasai-mara',
+    driveHours: 5.5, // one way from Nairobi
     name: 'Maasai Mara',
     region: 'Narok County',
     lat: -1.4902,
@@ -55,6 +57,7 @@ const destinations = {
   },
   diani: {
     slug: 'diani',
+    driveHours: 6.5, // one way from Nairobi
     name: 'Diani',
     region: 'Kwale County',
     lat: -4.2799,
@@ -75,6 +78,7 @@ const destinations = {
   },
   amboseli: {
     slug: 'amboseli',
+    driveHours: 4, // one way from Nairobi
     name: 'Amboseli',
     region: 'Kajiado County',
     lat: -2.6527,

@@ -11,14 +11,14 @@ const LIST_COLUMNS = `${PACKAGE_BASE}, destination:destinations!inner(slug, name
 
 const DETAIL_COLUMNS = [
   PACKAGE_BASE,
-  'destination:destinations!inner(slug, name, region, faq, sw)',
+  'destination:destinations!inner(slug, name, region, faq, sw, drive_hours)',
   'inclusions, exclusions, cancel_policy',
   'agency:agencies(name, licence_no)',
   'items:package_items(day, qty, listing:listings(title, kind, unit, provider:providers(name, type, licence_no, verified_at)))',
   'reviews(rating, body, created_at, status)',
 ].join(', ');
 
-const DESTINATION_COLUMNS = 'slug, name, region, summary, best_time, getting_there, faq, hero_image, sw';
+const DESTINATION_COLUMNS = 'slug, name, region, summary, best_time, getting_there, faq, hero_image, sw, drive_hours';
 
 async function run(query) {
   const { data, error } = await query;
@@ -50,6 +50,7 @@ const toDestination = (row) => ({
   faq: row.faq || [],
   heroImage: row.hero_image,
   sw: row.sw || {},
+  driveHours: row.drive_hours == null ? null : Number(row.drive_hours),
 });
 
 function toPackageDetail(row) {
@@ -109,6 +110,23 @@ export function usePackage(slug) {
       const row = await run(supabase.from('packages').select(DETAIL_COLUMNS).eq('slug', slug).eq('status', 'published').maybeSingle());
       return row ? toPackageDetail(row) : null;
     },
+  });
+}
+
+/** Bookable listings at a destination, for the custom trip builder (RLS hides unverified ones). */
+export function useListings(destinationSlug) {
+  return useQuery({
+    queryKey: ['listings', destinationSlug],
+    enabled: enabled && Boolean(destinationSlug),
+    queryFn: async () =>
+      run(
+        supabase
+          .from('listings')
+          .select('id, title, kind, unit, destination:destinations!inner(slug)')
+          .eq('destination.slug', destinationSlug)
+          .eq('active', true)
+          .order('title'),
+      ),
   });
 }
 

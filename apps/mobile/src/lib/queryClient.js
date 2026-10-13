@@ -24,4 +24,9 @@ export const persistOptions = {
   persister: createSyncStoragePersister({ storage: asStorage(cacheStore), key: 'safiri-query-cache', throttleTime: 1000 }),
   maxAge: 7 * DAY,
   buster: '0.1.0', // bump when cached data shapes change
+  // Live prices and holds are never saved for offline: a stale quote must not reappear.
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query) =>
+      query.state.status === 'success' && !['quote', 'hold'].includes(query.queryKey[0]),
+  },
 };

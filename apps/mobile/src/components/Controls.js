@@ -165,3 +165,40 @@ export function Chip({ label, selected, onPress, icon }) {
     </Pressable>
   );
 }
+
+/** - n + with 48dp buttons. */
+export function Stepper({ label, hint, value, min = 1, max = 20, onChange }) {
+  const { c, radius, space } = useTheme();
+  const button = (icon, next, disabled, a11y) => (
+    <Pressable
+      onPress={() => onChange(next)}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={a11y}
+      style={{
+        width: touchTarget,
+        height: touchTarget,
+        borderRadius: radius.input,
+        borderWidth: 1.5,
+        borderColor: disabled ? c.divider : c.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Ionicons name={icon} size={20} color={disabled ? c.textMuted : c.primary} />
+    </Pressable>
+  );
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: touchTarget }} accessibilityLabel={`${label}: ${value}`}>
+      <View style={{ flex: 1 }}>
+        <AppText variant="body">{label}</AppText>
+        {hint ? <AppText variant="caption" tone="textMuted">{hint}</AppText> : null}
+      </View>
+      {button('remove', value - 1, value <= min, `${label} -1`)}
+      <AppText variant="heading" tabular style={{ minWidth: 32, textAlign: 'center' }} accessibilityLiveRegion="polite">
+        {value}
+      </AppText>
+      {button('add', value + 1, value >= max, `${label} +1`)}
+    </View>
+  );
+}

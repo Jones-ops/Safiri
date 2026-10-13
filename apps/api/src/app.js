@@ -8,7 +8,10 @@ const { createSupabaseAdmin, createTokenVerifier } = require('./integrations/sup
 const { createSmsClient } = require('./integrations/africastalking');
 const { createProfilesService } = require('./services/profiles');
 const { createCatalogue } = require('./services/catalogue');
-const { requireUser } = require('./lib/auth');
+const { createQuoteService } = require('./services/quotes');
+const { createHoldService } = require('./services/holds');
+const { createDb } = require('./lib/db');
+const { requireUser, optionalUser } = require('./lib/auth');
 
 async function buildApp(config, overrides = {}) {
   const app = Fastify({
@@ -38,8 +41,12 @@ async function buildApp(config, overrides = {}) {
     }),
     profiles: overrides.profiles || createProfilesService(supabase),
     catalogue: overrides.catalogue || createCatalogue(supabase),
+    db: overrides.db !== undefined ? overrides.db : createDb(config.DATABASE_URL),
   };
+  deps.quotes = overrides.quotes || createQuoteService(deps.db);
+  deps.holds = overrides.holds || createHoldService(deps.db, { tokenSecret: config.HOLD_TOKEN_SECRET });
   deps.requireUser = requireUser(deps.verifyToken);
+  deps.optionalUser = optionalUser(deps.verifyToken);
 
   await app.register(require('@fastify/sensible'));
   await app.register(require('@fastify/cors'), {
@@ -50,9 +57,16 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/health'), deps);
   await app.register(require('./routes/hooks'), deps);
   await app.register(require('./routes/me'), deps);
+  await app.register(require('./routes/build'), deps);
   await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);
+
+  // Close the database pool with the server (it is ours unless a test passed one in).
+  app.addHook('onClose', async () => {
+    if (deps.db && overrides.db === undefined) await deps.db.end();
+  });
+  app.decorate('services', deps);
 
   return app;
 }

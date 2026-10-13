@@ -18,6 +18,10 @@ const schema = z
     SUPABASE_URL: optional,
     SUPABASE_SERVICE_ROLE_KEY: optional,
     SEND_SMS_HOOK_SECRET: optional, // "v1,whsec_..." from the Supabase Send SMS hook
+    // Direct Postgres for money and inventory (transactions, holds) and the pg-boss job queue.
+    DATABASE_URL: optional,
+    // Signs the hold token given to guests so only they can view or release their hold.
+    HOLD_TOKEN_SECRET: optional,
 
     AT_USERNAME: optional, // "sandbox" for the Africa's Talking sandbox
     AT_API_KEY: optional,
@@ -32,7 +36,7 @@ const schema = z
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;
-    for (const key of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SEND_SMS_HOOK_SECRET', 'AT_USERNAME', 'AT_API_KEY']) {
+    for (const key of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'DATABASE_URL', 'HOLD_TOKEN_SECRET', 'SEND_SMS_HOOK_SECRET', 'AT_USERNAME', 'AT_API_KEY']) {
       if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'required in production' });
     }
   });

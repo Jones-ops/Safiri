@@ -5,7 +5,7 @@ from Nairobi to Naivasha, the Maasai Mara, Diani and Amboseli. KES only, M-PESA 
 
 The full plan (design system, data model, slices, paperwork track) is the build plan document
 "Safiri: Build Plan, Prompt and First Results" (13 Oct 2026).
-Done: **Slice 0 (Foundation)** and **Slice 1 (Discover)**. Next: Slice 2 (trip builder, quotes, 15-minute holds).
+Done: **Slice 0 (Foundation)**, **Slice 1 (Discover)** and **Slice 2 (Build)**. Next: Slice 3a (pay once with M-PESA).
 
 ## What's here
 
@@ -56,9 +56,13 @@ Wanjiru `0700 000 001`, Otieno `0700 000 002`, Achieng `0700 000 003`, agency `0
 ### 3. API
 
 ```sh
-cp apps/api/.env.example apps/api/.env   # fill SUPABASE_SERVICE_ROLE_KEY and SEND_SMS_HOOK_SECRET
+cp apps/api/.env.example apps/api/.env   # fill SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL, HOLD_TOKEN_SECRET
 npm run api                              # http://localhost:3000/health
 ```
+
+`DATABASE_URL` is a direct Postgres connection (hosted: the **session** pooler string). The API
+uses it for quotes and 15-minute holds, and for its pg-boss job queue: every minute it releases
+expired holds, and every hour it re-prices packages so display prices equal what a quote charges.
 
 With no Africa's Talking keys in development, OTP texts are written to the API log instead of sent.
 
@@ -86,7 +90,7 @@ cd ../.. && npm run mobile    # then every day: starts Metro for the dev build
 
 ```sh
 npm run lint
-npm test                  # shared unit tests, database + RLS tests (PGlite), API tests
+npm test                  # shared unit tests, database + RLS tests (PGlite), real-Postgres concurrency tests, API tests
 npm run db:check          # applies migrations + seed to a throwaway Postgres and prints counts
 npm run db:seed           # regenerate supabase/seed.sql after editing supabase/seed/data.js
 cd apps/mobile && npm run export:android && npm run check:bundle   # bundle + secrets scan

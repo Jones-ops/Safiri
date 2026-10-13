@@ -50,6 +50,8 @@ function RootStack() {
         <Stack.Screen name="design-system" options={{ title: t('designSystem.title') }} />
         <Stack.Screen name="p/[slug]" options={{ title: '' }} />
         <Stack.Screen name="d/[slug]" options={{ title: '' }} />
+        <Stack.Screen name="builder" options={{ title: t('builder.title') }} />
+        <Stack.Screen name="hold/[id]" options={{ title: t('hold.title'), gestureEnabled: false }} />
       </Stack>
     </>
   );

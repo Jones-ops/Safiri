@@ -4,7 +4,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { instalmentPreview } from '@safiri/shared';
-import { AppText, EmptyState, FaqItem, OfflineBanner, PackageCard, PhotoBackground, Skeleton } from '../../src/components';
+import { AppText, Button, EmptyState, FaqItem, OfflineBanner, PackageCard, PhotoBackground, Skeleton } from '../../src/components';
 import { useTheme } from '../../src/theme/ThemeProvider';
 import { useIsOnline } from '../../src/lib/network';
 import { photoSource } from '../../src/lib/photos';
@@ -72,6 +72,9 @@ export default function Destination() {
         <AppText variant="body">{localised(d, 'bestTime', lang)}</AppText>
         <AppText variant="heading" accessibilityRole="header" style={{ marginTop: space.md }}>{t('destination.gettingThere')}</AppText>
         <AppText variant="body">{localised(d, 'gettingThere', lang)}</AppText>
+
+        <Button label={t('builder.buildOwn')} icon="construct-outline" variant="secondary"
+          onPress={() => router.push(`/builder?destination=${d.slug}`)} style={{ marginTop: space.lg }} />
 
         <AppText variant="title" accessibilityRole="header" style={{ marginTop: space.xl }}>
           {t('destination.packages', { name: d.name })}

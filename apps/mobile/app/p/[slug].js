@@ -4,7 +4,7 @@
  * Refund terms and licences are shown before any payment ("trust is visible").
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ScrollView, Share, View } from 'react-native';
+import { ScrollView, Share, View } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -132,8 +132,7 @@ export default function PackageDetail() {
   const onShare = () =>
     Share.share({ message: t('pkg.shareMessage', { title, price: formatKes(pkg.fromPriceKes), url: shareUrl || '' }) }).catch(() => {});
 
-  // Booking (quote, 15-minute hold, M-PESA) is Slice 2 and 3a.
-  const onBook = () => Alert.alert(t('pkg.book'), t('pkg.bookingOpensSoon'));
+  const onBook = () => router.push(`/builder?package=${pkg.slug}`);
 
   return (
     <View style={{ flex: 1 }}>

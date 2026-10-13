@@ -10,6 +10,11 @@ const MONTHS = {
   sw: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
 };
 
+const DAYS = {
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  sw: ['Jpi', 'Jtt', 'Jnn', 'Jtn', 'Alh', 'Iju', 'Jmo'], // Jumapili ... Jumamosi
+};
+
 const toEat = (value) => new Date(new Date(value).getTime() + EAT_OFFSET_MS);
 
 /** "13 Oct 2026" / "13 Okt 2026". Accepts a Date, timestamp or "YYYY-MM-DD". */
@@ -19,6 +24,23 @@ export function formatDate(value, language = 'en', { withYear = true } = {}) {
   const months = MONTHS[language] || MONTHS.en;
   const base = `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
   return withYear ? `${base} ${d.getUTCFullYear()}` : base;
+}
+
+/** A calendar date ("2026-10-17") as a chip label: { day: "Sat", date: "17 Oct", weekend: true }. */
+export function formatDayChip(isoDate, language = 'en') {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  const weekday = d.getUTCDay();
+  return {
+    day: (DAYS[language] || DAYS.en)[weekday],
+    date: formatDate(isoDate, language, { withYear: false }),
+    weekend: weekday === 5 || weekday === 6 || weekday === 0,
+  };
+}
+
+/** "mm:ss" for countdowns. */
+export function formatCountdown(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 }
 
 /** "14:05" in EAT (Kenyans use the 24-hour clock in writing as often as 12-hour; 24h avoids am/pm confusion). */

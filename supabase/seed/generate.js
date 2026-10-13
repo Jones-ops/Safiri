@@ -7,7 +7,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { priceBreakdown, paymentSchedule, DEFAULTS } = require('@safiri/shared');
+const { priceBreakdown, paymentSchedule, expandLines, DEFAULTS } = require('@safiri/shared');
 const data = require('./data');
 
 const OUT = path.join(__dirname, '..', 'seed.sql');
@@ -55,23 +55,15 @@ function packagePrice(pkg) {
   });
 }
 
-/** Expand package items into dated booking lines (one row per night/day for stays and drives). */
+/** Dated booking lines for a package (shared rule: rooms are twin share, drives per day). */
 function bookingLines(pkg, startDay, travellers) {
-  const lines = [];
-  for (const [listingKey, dayNo, qty] of pkg.items) {
-    const listing = data.listings[listingKey];
-    const firstDay = startDay + dayNo - 1;
-    if (listing.unit === 'night' || listing.unit === 'day') {
-      // Stays: rooms are twin share. Drives: one place per traveller each day.
-      const units = listing.unit === 'night' ? Math.ceil(travellers / 2) : travellers;
-      for (let k = 0; k < qty; k++) {
-        lines.push({ listingKey, day: firstDay + k, units, netKes: listing.netKes * travellers });
-      }
-    } else {
-      lines.push({ listingKey, day: firstDay, units: travellers * qty, netKes: listing.netKes * qty * travellers });
-    }
-  }
-  return lines;
+  const items = pkg.items.map(([listingKey, day, qty]) => ({ ref: listingKey, unit: data.listings[listingKey].unit, day, qty }));
+  return expandLines(items, travellers).map((l) => ({
+    listingKey: l.ref,
+    day: startDay + l.dayIndex,
+    units: l.units,
+    netKes: data.listings[l.ref].netKes * l.perPersonQty * travellers,
+  }));
 }
 
 function build() {
@@ -112,7 +104,7 @@ function build() {
   sql.push(insert('destinations', Object.entries(data.destinations).map(([key, d]) => ({
     id: q(id('destination', key)), slug: q(d.slug), name: q(d.name), region: q(d.region), lat: d.lat, lng: d.lng,
     summary: q(d.summary), best_time: q(d.bestTime), getting_there: q(d.gettingThere), faq: json(d.faq),
-    hero_image: q(d.heroImage), sw: json(d.sw),
+    hero_image: q(d.heroImage), sw: json(d.sw), drive_hours: d.driveHours,
   }))));
 
   const a = data.agency;
