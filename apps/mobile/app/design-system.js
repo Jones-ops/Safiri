@@ -133,7 +133,7 @@ export default function DesignSystem() {
         <Section title="Buttons">
           <Button label={t('price.bookNow')} />
           <Button label={t('price.splitWithFriends')} variant="secondary" icon="people-outline" />
-          <Button label={t('auth.changeNumber')} variant="ghost" />
+          <Button label={t('auth.changeEmail')} variant="ghost" />
           <Button label={t('common.loading')} loading />
           <Button label={t('common.continue')} disabled />
         </Section>

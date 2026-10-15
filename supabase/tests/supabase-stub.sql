@@ -17,6 +17,7 @@ create table auth.users (
   aud text,
   role text,
   email text unique,
+  email_confirmed_at timestamptz,
   phone text unique,
   phone_confirmed_at timestamptz,
   raw_app_meta_data jsonb default '{}',

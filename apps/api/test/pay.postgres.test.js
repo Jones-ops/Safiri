@@ -56,7 +56,7 @@ test.before(async () => {
     db,
     daraja,
     sms,
-    verifyToken: async (token) => (token === 'otieno' ? { sub: otienoId, phone: '254700000002' } : null),
+    verifyToken: async (token) => (token === 'otieno' ? { sub: otienoId, email: 'otieno@safiri.test' } : null),
     profiles: {},
     catalogue: {},
   });
@@ -292,10 +292,12 @@ test('M-PESA limit and trips too close for a deposit', async () => {
   assert.equal((await pay(soon, 'deposit')).json().error, 'deposit_not_available');
 });
 
-test('after paying as a guest, signing in with the same phone claims the booking', async () => {
-  const b = await heldBooking({ phone: '0700000002' });
+test('after paying as a guest, signing in (any email) claims the booking with its token', async () => {
+  const b = await heldBooking({ phone: '0711000222' }); // not the account's phone: email accounts may have none
   await pay(b, 'deposit');
   await callback(lastCheckoutId(), { amount: 7850 });
+  const noToken = await app.inject({ method: 'POST', url: `/v1/bookings/${b.bookingId}/claim`, payload: {}, headers: { authorization: 'Bearer otieno' } });
+  assert.equal(noToken.statusCode, 404, 'the token proves the booking is theirs');
   const claim = await app.inject({ method: 'POST', url: `/v1/bookings/${b.bookingId}/claim`, payload: { token: b.holdToken }, headers: { authorization: 'Bearer otieno' } });
   assert.deepEqual(claim.json(), { claimed: true });
   const view = await app.inject({ url: `/v1/bookings/${b.bookingId}`, headers: { authorization: 'Bearer otieno' } });

@@ -1,7 +1,7 @@
 /**
  * Success / receipt: booking ref, what was paid with the M-PESA receipt codes, the payment
- * plan and the next due date. Guests are offered an account (phone OTP) so the trip follows
- * them to any phone; it can be skipped. Signing in with the booking's phone claims it.
+ * plan and the next due date. Guests are offered an account (email code) so the trip follows
+ * them to any phone; it can be skipped. Signing in on this phone claims the booking.
  */
 import { useEffect, useRef } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -28,7 +28,7 @@ export default function Receipt() {
   const claim = useClaimBooking();
   const b = booking.data;
 
-  // Came back from signing in: attach this booking to the account (same phone only).
+  // Came back from signing in: attach this booking to the account (this phone holds its token).
   const claimTried = useRef(false);
   useEffect(() => {
     if (!session || !b || b.claimed || claimTried.current) return;
@@ -106,7 +106,7 @@ export default function Receipt() {
         <View style={{ gap: space.sm, padding: space.lg, borderRadius: radius.card, backgroundColor: c.surface }}>
           <AppText variant="heading">{t('receipt.saveAccount')}</AppText>
           <AppText variant="body" tone="textMuted">{t('receipt.saveAccountHint')}</AppText>
-          <Button label={t('profile.signIn')} icon="call-outline" onPress={() => router.push('/sign-in')} />
+          <Button label={t('profile.signIn')} icon="mail-outline" onPress={() => router.push('/sign-in')} />
         </View>
       ) : null}
 

@@ -17,9 +17,9 @@ async function makeApp(overrides = {}) {
   const config = loadConfig({ NODE_ENV: 'test', SEND_SMS_HOOK_SECRET: `v1,whsec_${SECRET}` });
   return buildApp(config, {
     supabase: null,
-    verifyToken: async (token) => (token === 'good-token' ? { sub: 'user-1', phone: '254712345678' } : null),
+    verifyToken: async (token) => (token === 'good-token' ? { sub: 'user-1', email: 'wanjiru@example.com' } : null),
     profiles: { getByUserId: async (id) => (id === 'user-1'
-      ? { user_id: 'user-1', phone: '254712345678', name: 'Wanjiru', roles: ['traveller'], language: 'sw', low_data: true }
+      ? { user_id: 'user-1', email: 'wanjiru@example.com', phone: null, name: 'Wanjiru', roles: ['traveller'], language: 'sw', low_data: true }
       : null) },
     ...overrides,
   });
@@ -108,7 +108,7 @@ test('GET /v1/me needs a valid token', async () => {
   const ok = await app.inject({ method: 'GET', url: '/v1/me', headers: { authorization: 'Bearer good-token' } });
   assert.equal(ok.statusCode, 200);
   assert.deepEqual(ok.json(), {
-    id: 'user-1', phone: '254712345678', name: 'Wanjiru', roles: ['traveller'], language: 'sw', lowData: true,
+    id: 'user-1', email: 'wanjiru@example.com', phone: null, name: 'Wanjiru', roles: ['traveller'], language: 'sw', lowData: true,
   });
   await app.close();
 });

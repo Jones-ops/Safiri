@@ -1,18 +1,18 @@
-/** Sign in step 1: phone number. Supabase sends a 6-digit code by SMS (via our API hook). */
+/** Sign in step 1: email. Supabase emails a 6-digit code. */
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { EVENTS, msisdnSchema, toE164, z } from '@safiri/shared';
-import { AppText, Button, PhoneInput } from '../src/components';
+import { EVENTS, emailSchema, z } from '@safiri/shared';
+import { AppText, Button, EmailInput } from '../src/components';
 import { useTheme } from '../src/theme/ThemeProvider';
 import { isSupabaseConfigured, supabase } from '../src/lib/supabase';
 import { currentLanguage } from '../src/i18n';
 import { track } from '../src/analytics';
 
-const formSchema = z.object({ phone: msisdnSchema });
+const formSchema = z.object({ email: emailSchema });
 
 export default function SignIn() {
   const { space } = useTheme();
@@ -20,38 +20,38 @@ export default function SignIn() {
   const [serverError, setServerError] = useState(null);
   const { control, handleSubmit, formState } = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { phone: '' },
+    defaultValues: { email: '' },
   });
 
-  const onSubmit = handleSubmit(async ({ phone }) => {
+  const onSubmit = handleSubmit(async ({ email }) => {
     setServerError(null);
     if (!isSupabaseConfigured) {
       setServerError('common.notConfigured');
       return;
     }
     const { error } = await supabase.auth.signInWithOtp({
-      phone: toE164(phone),
-      options: { data: { language: currentLanguage() } }, // lets the SMS hook text in the right language
+      email,
+      options: { data: { language: currentLanguage() } }, // saved on the new profile
     });
     if (error) {
       setServerError(error.status ? 'errors.generic' : 'errors.network');
       return;
     }
     track(EVENTS.OTP_REQUESTED);
-    router.push({ pathname: '/verify', params: { phone } });
+    router.push({ pathname: '/verify', params: { email } });
   });
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{ padding: space.xl, gap: space.xl }} keyboardShouldPersistTaps="handled">
         <AppText variant="body" tone="textMuted">
-          {t('auth.phoneHint')}
+          {t('auth.emailHint')}
         </AppText>
         <Controller
           control={control}
-          name="phone"
+          name="email"
           render={({ field, fieldState }) => (
-            <PhoneInput
+            <EmailInput
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}

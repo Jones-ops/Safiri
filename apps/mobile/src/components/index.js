@@ -10,6 +10,7 @@ export { PaymentStatusRow } from './PaymentStatusRow';
 export { MemberPaidChip } from './MemberPaidChip';
 export { VerifiedBadge } from './VerifiedBadge';
 export { PhoneInput } from './PhoneInput';
+export { EmailInput } from './EmailInput';
 export { OfflineBanner } from './OfflineBanner';
 export { EmptyState } from './EmptyState';
 export { Skeleton } from './Skeleton';

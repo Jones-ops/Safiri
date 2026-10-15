@@ -37,28 +37,28 @@ jwt_expiry = 3600
 enable_refresh_token_rotation = true
 enable_signup = true
 
-# The phone number is the identity: sign in by SMS one-time code only.
+# Sign in by email one-time code only. The phone number is the M-PESA number on each booking,
+# not the account. Local emails land in Mailpit: http://127.0.0.1:54324
 [auth.email]
-enable_signup = false
-
-[auth.sms]
 enable_signup = true
-enable_confirmations = true
-template = "Your Safiri code is {{ .Code }}"
+enable_confirmations = false
+otp_length = 6
+otp_expiry = 600
 max_frequency = "60s"
 
-# Seeded numbers sign in with a fixed code, so local demos need no SMS credit.
-# Never add test OTPs to a hosted project.
-[auth.sms.test_otp]
-254700000001 = "123456"
-254700000002 = "123456"
-254700000003 = "123456"
-254700000021 = "123456"
-254700000101 = "123456"
+# The code, not a link: the app has the traveller type it in. New addresses get the
+# confirmation email, known ones the magic link email, so both carry the code.
+[auth.email.template.confirmation]
+subject = "Your Safiri code"
+content_path = "./supabase/templates/email-code.html"
 
-# OTP texts are sent by our API through Africa's Talking (Send SMS hook).
-# The secret must match SEND_SMS_HOOK_SECRET in apps/api/.env.
-[auth.hook.send_sms]
+[auth.email.template.magic_link]
+subject = "Your Safiri code"
+content_path = "./supabase/templates/email-code.html"
+
+[auth.sms]
+enable_signup = false
+
+[inbucket]
 enabled = true
-uri = "http://host.docker.internal:3000/hooks/send-sms"
-secrets = "env(SEND_SMS_HOOK_SECRET)"
+port = 54324

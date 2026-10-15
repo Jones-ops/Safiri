@@ -6,10 +6,10 @@
  */
 
 const users = {
-  wanjiru: { phone: '254700000001', name: 'Wanjiru', roles: ['traveller'], language: 'en' },
-  otieno: { phone: '254700000002', name: 'Otieno', roles: ['traveller'], language: 'sw' },
-  achieng: { phone: '254700000003', name: 'Achieng', roles: ['traveller'], language: 'en' },
-  agencyOwner: { phone: '254700000021', name: 'Safiri Getaways desk', roles: ['traveller', 'agency'], language: 'en' },
+  wanjiru: { email: 'wanjiru@safiri.test', phone: '254700000001', name: 'Wanjiru', roles: ['traveller'], language: 'en' },
+  otieno: { email: 'otieno@safiri.test', phone: '254700000002', name: 'Otieno', roles: ['traveller'], language: 'sw' },
+  achieng: { email: 'achieng@safiri.test', phone: '254700000003', name: 'Achieng', roles: ['traveller'], language: 'en' },
+  agencyOwner: { email: 'agency@safiri.test', phone: '254700000021', name: 'Safiri Getaways desk', roles: ['traveller', 'agency'], language: 'en' },
 };
 
 const destinations = {

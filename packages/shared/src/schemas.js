@@ -16,6 +16,9 @@ const msisdnSchema = z
     return normal;
   });
 
+/** Sign-in email, lower-cased so one address is one account. */
+const emailSchema = z.string().trim().toLowerCase().pipe(z.email('email.invalid'));
+
 const otpSchema = z.string().trim().regex(/^\d{6}$/, 'otp.invalid');
 
 const languageSchema = z.enum(LANGUAGES);
@@ -85,6 +88,7 @@ const splitRequestSchema = z
 module.exports = {
   splitRequestSchema,
   msisdnSchema,
+  emailSchema,
   otpSchema,
   languageSchema,
   consentsSchema,

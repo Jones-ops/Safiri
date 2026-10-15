@@ -59,7 +59,7 @@ test.describe('traveller', () => {
     });
   });
 
-  test('can edit name, language and data saver, but never roles or phone', async () => {
+  test('can edit name, language and data saver, but never roles, phone or email', async () => {
     await as(db, users.wanjiru, async (tx) => {
       const { affectedRows } = await tx.query(`update profiles set name = 'Wanjiru K', language = 'sw', low_data = true`);
       assert.equal(affectedRows, 1);
@@ -68,6 +68,8 @@ test.describe('traveller', () => {
     assert.match(String(roles?.message), /permission denied/);
     const phone = await expectError(db, users.wanjiru, (tx) => tx.query(`update profiles set phone = '254711111111'`));
     assert.match(String(phone?.message), /permission denied/);
+    const email = await expectError(db, users.wanjiru, (tx) => tx.query(`update profiles set email = 'someone@else.com'`));
+    assert.match(String(email?.message), /permission denied/);
   });
 
   test("cannot change another user's profile", async () => {

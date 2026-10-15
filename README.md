@@ -39,20 +39,21 @@ npm install
 Local, with Docker:
 
 ```sh
-# The Send SMS hook secret is shared by Supabase and the API. Make one:
-node -e "console.log('v1,whsec_'+require('crypto').randomBytes(32).toString('base64'))"
-export SEND_SMS_HOOK_SECRET='v1,whsec_...'      # PowerShell: $env:SEND_SMS_HOOK_SECRET='v1,whsec_...'
-
 npx supabase start       # prints the API URL, publishable (anon) key and service-role key
 npx supabase db reset    # applies supabase/migrations and supabase/seed.sql
 ```
 
 Hosted project: `npx supabase link --project-ref <ref>`, then `npx supabase db push`, then run
-`supabase/seed.sql` in the SQL editor (development projects only). In the dashboard, enable the
-Phone provider and add the Send SMS hook (HTTP, `https://<api-host>/hooks/send-sms`).
+`supabase/seed.sql` in the SQL editor (development projects only).
 
-Seeded phone numbers sign in with code `123456` locally (see `supabase/config.toml`):
-Wanjiru `0700 000 001`, Otieno `0700 000 002`, Achieng `0700 000 003`, agency `0700 000 021`.
+Sign-in is by **email one-time code** (the phone number is only the M-PESA number on a booking).
+On a hosted project, under Authentication > Emails, put the code in the **Confirm signup** and
+**Magic Link** templates (copy `supabase/templates/email-code.html`, which uses `{{ .Token }}`),
+and keep the code length at 6. Supabase's built-in mailer only sends a few emails an hour, and
+only to project team members: set up custom SMTP (Authentication > SMTP) before real users sign in.
+
+Locally, seeded users sign in by email and the codes land in Mailpit (http://127.0.0.1:54324):
+`wanjiru@safiri.test`, `otieno@safiri.test`, `achieng@safiri.test`, agency `agency@safiri.test`.
 
 ### 3. API
 
@@ -65,7 +66,7 @@ npm run api                              # http://localhost:3000/health
 uses it for quotes and 15-minute holds, and for its pg-boss job queue: every minute it releases
 expired holds, and every hour it re-prices packages so display prices equal what a quote charges.
 
-With no Africa's Talking keys in development, OTP texts are written to the API log instead of sent.
+With no Africa's Talking keys in development, SMS receipts and reminders are written to the API log instead of sent.
 
 The API also serves the public web pages: `/` (home), `/d/naivasha`, `/p/naivasha-lakeside-weekend`,
 `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/privacy`. Add `?lang=sw` for Kiswahili. Upload the

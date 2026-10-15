@@ -28,22 +28,26 @@
     "consentRequired": "Weka alama kwenye kisanduku cha kwanza ili kuendelea. Hatuwezi kupokea nafasi bila hiyo."
   },
   "auth": {
-    "phoneTitle": "Namba yako ya M-PESA",
-    "phoneHint": "Tutakutumia nambari ya siri yenye tarakimu 6. Namba hii ndiyo akaunti yako.",
+    "emailTitle": "Ingia",
+    "emailHint": "Tutakutumia nambari ya siri yenye tarakimu 6 kwa barua pepe. Namba yako ya M-PESA itaombwa unapolipa.",
+    "emailLabel": "Barua pepe",
     "phoneLabel": "Namba ya simu",
     "sendCode": "Tuma nambari",
     "otpTitle": "Weka nambari ya siri",
-    "otpHint": "Tumeituma kwa {{phone}}",
+    "otpHint": "Tumeituma kwa {{email}}",
     "otpLabel": "Nambari ya tarakimu 6",
     "verify": "Thibitisha",
     "resend": "Tuma nambari mpya",
     "resendIn": "Tuma nambari mpya baada ya sekunde {{seconds}}",
-    "changeNumber": "Badilisha namba",
+    "changeEmail": "Tumia barua pepe nyingine",
     "signOut": "Ondoka"
   },
   "errors": {
     "phone": {
       "invalid": "Weka namba ya simu ya Kenya, kama 0712 345 678"
+    },
+    "email": {
+      "invalid": "Weka barua pepe, kama wanjiru@gmail.com"
     },
     "otp": {
       "invalid": "Nambari ina tarakimu 6",
@@ -102,9 +106,9 @@
   },
   "profile": {
     "title": "Wasifu",
-    "signedInAs": "Umeingia kama {{phone}}",
+    "signedInAs": "Umeingia kama {{email}}",
     "notSignedIn": "Hujaingia",
-    "signIn": "Ingia kwa simu yako",
+    "signIn": "Ingia kwa barua pepe yako",
     "language": "Lugha",
     "lowData": "Okoa data",
     "notifications": "Vikumbusho",
@@ -169,7 +173,7 @@
   },
   "privacy": {
     "title": "Ilani ya faragha",
-    "intro": "Safiri (mdhibiti wa data) hutumia data binafsi kidogo iwezekanavyo. Namba yako ya simu ndiyo akaunti yako.",
+    "intro": "Safiri (mdhibiti wa data) hutumia data binafsi kidogo iwezekanavyo. Unaingia kwa barua pepe yako; namba yako ya simu hutumika kwa malipo ya M-PESA na risiti.",
     "whatTitle": "Tunachohifadhi na kwa nini",
     "what": "Namba yako ya simu na jina lako, ili kuweka nafasi, kupokea malipo ya M-PESA na kutuma risiti. Kumbukumbu za safari na malipo, kwa sababu sheria za kodi na za watumiaji zinazihitaji. Data ya matumizi, ukiruhusu tu, ili kuboresha programu.",
     "shareTitle": "Tunashirikiana na nani",
@@ -356,7 +360,7 @@
     "next": "Malipo yajayo {{amount}} tarehe {{date}}",
     "nothingMore": "Hakuna zaidi ya kulipa",
     "saveAccount": "Hifadhi safari hii kwenye akaunti yako",
-    "saveAccountHint": "Ingia kwa namba yako ya simu uone safari hii kwenye simu yoyote.",
+    "saveAccountHint": "Ingia kwa barua pepe yako uone safari hii kwenye simu yoyote.",
     "saved": "Imehifadhiwa kwenye akaunti yako",
     "done": "Sawa",
     "refundDue": "Malipo yako yalifika baada ya muda wa kushikilia kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi.",

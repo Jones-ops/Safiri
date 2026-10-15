@@ -28,22 +28,26 @@
     "consentRequired": "Tick the first box to continue. We can't take bookings without it."
   },
   "auth": {
-    "phoneTitle": "Your M-PESA number",
-    "phoneHint": "We'll text you a 6-digit code. This number is your account.",
+    "emailTitle": "Sign in",
+    "emailHint": "We'll email you a 6-digit code. Your M-PESA number is asked for when you pay.",
+    "emailLabel": "Email address",
     "phoneLabel": "Phone number",
     "sendCode": "Send code",
     "otpTitle": "Enter the code",
-    "otpHint": "We sent it to {{phone}}",
+    "otpHint": "We sent it to {{email}}",
     "otpLabel": "6-digit code",
     "verify": "Confirm",
     "resend": "Send a new code",
     "resendIn": "Send a new code in {{seconds}}s",
-    "changeNumber": "Change number",
+    "changeEmail": "Use a different email",
     "signOut": "Sign out"
   },
   "errors": {
     "phone": {
       "invalid": "Enter a Kenyan mobile number, like 0712 345 678"
+    },
+    "email": {
+      "invalid": "Enter an email address, like wanjiru@gmail.com"
     },
     "otp": {
       "invalid": "The code is 6 digits",
@@ -102,9 +106,9 @@
   },
   "profile": {
     "title": "Profile",
-    "signedInAs": "Signed in as {{phone}}",
+    "signedInAs": "Signed in as {{email}}",
     "notSignedIn": "Not signed in",
-    "signIn": "Sign in with your phone",
+    "signIn": "Sign in with your email",
     "language": "Language",
     "lowData": "Save data",
     "notifications": "Reminders",
@@ -169,7 +173,7 @@
   },
   "privacy": {
     "title": "Privacy notice",
-    "intro": "Safiri (the data controller) uses as little personal data as it can. Your phone number is your account.",
+    "intro": "Safiri (the data controller) uses as little personal data as it can. You sign in with your email address; your phone number is used for M-PESA payments and receipts.",
     "whatTitle": "What we keep and why",
     "what": "Your phone number and name, to make bookings, take M-PESA payments and send receipts. Trip and payment records, because tax and consumer law require them. Usage data, only if you allow it, to improve the app.",
     "shareTitle": "Who we share it with",
@@ -356,7 +360,7 @@
     "next": "Next payment {{amount}} on {{date}}",
     "nothingMore": "Nothing more to pay",
     "saveAccount": "Save this trip to your account",
-    "saveAccountHint": "Sign in with your phone number to see this trip on any phone.",
+    "saveAccountHint": "Sign in with your email to see this trip on any phone.",
     "saved": "Saved to your account",
     "done": "Done",
     "refundDue": "Your payment arrived after the hold ended. We will refund it in full within 3 working days.",

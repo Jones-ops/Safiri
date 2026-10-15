@@ -10,7 +10,6 @@ import { useSession } from '../../src/features/auth/session';
 import { syncAfterSignIn } from '../../src/features/auth/sync';
 import { supabase } from '../../src/lib/supabase';
 import { api } from '../../src/lib/api';
-import { formatMsisdn } from '../../src/lib/format';
 import { useSettings } from '../../src/state/settings';
 import { currentLanguage } from '../../src/i18n';
 import { track } from '../../src/analytics';
@@ -24,7 +23,7 @@ export default function Profile() {
 
   // Goes through the API, proving app -> API -> Supabase auth works end to end.
   const me = useQuery({ queryKey: ['me', session?.user.id], queryFn: () => api('/v1/me'), enabled: Boolean(session) });
-  const phone = me.data?.phone || session?.user.phone;
+  const email = me.data?.email || session?.user.email;
 
   const saveToAccount = () => {
     if (session) syncAfterSignIn(session.user.id).catch(() => {});
@@ -36,9 +35,9 @@ export default function Profile() {
     <ScrollView contentContainerStyle={{ padding: space.xl, gap: space.xl }}>
       <View style={{ gap: space.sm }}>
         <AppText variant="body" tone="textMuted">
-          {session ? t('profile.signedInAs', { phone: formatMsisdn(phone) }) : t('profile.notSignedIn')}
+          {session ? t('profile.signedInAs', { email }) : t('profile.notSignedIn')}
         </AppText>
-        {!session ? <Button label={t('profile.signIn')} icon="call-outline" onPress={() => router.push('/sign-in')} /> : null}
+        {!session ? <Button label={t('profile.signIn')} icon="mail-outline" onPress={() => router.push('/sign-in')} /> : null}
       </View>
 
       <View style={{ gap: space.sm }}>

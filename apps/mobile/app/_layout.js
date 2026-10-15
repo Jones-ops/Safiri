@@ -45,7 +45,7 @@ function RootStack() {
       >
         <Stack.Screen name="(traveller)" options={{ headerShown: false }} />
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        <Stack.Screen name="sign-in" options={{ title: t('auth.phoneTitle') }} />
+        <Stack.Screen name="sign-in" options={{ title: t('auth.emailTitle') }} />
         <Stack.Screen name="verify" options={{ title: t('auth.otpTitle') }} />
         <Stack.Screen name="privacy" options={{ title: t('privacy.title') }} />
         <Stack.Screen name="credits" options={{ title: t('credits.title') }} />

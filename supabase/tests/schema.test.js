@@ -143,3 +143,15 @@ test('a phone sign-up creates a profile; bad phone numbers are refused', async (
     end $$`, { keep: false }), null);
   assert.match(String((await attempt(`insert into auth.users (id, phone) values (gen_random_uuid(), '12345')`))?.message), /msisdn/);
 });
+
+test('an email sign-up creates a profile with no phone; an email change follows through', async () => {
+  assert.equal(await attempt(`
+    insert into auth.users (id, email) values ('00000000-0000-4000-8000-00000000beef', 'Njeri@Example.com');
+    do $$ begin
+      if not exists (select 1 from profiles where email = 'njeri@example.com' and phone is null) then raise exception 'no profile'; end if;
+    end $$;
+    update auth.users set email = 'njeri.k@example.com' where id = '00000000-0000-4000-8000-00000000beef';
+    do $$ begin
+      if not exists (select 1 from profiles where email = 'njeri.k@example.com') then raise exception 'email not updated'; end if;
+    end $$`, { keep: false }), null);
+});

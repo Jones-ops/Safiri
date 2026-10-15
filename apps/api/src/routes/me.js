@@ -5,6 +5,7 @@ async function meRoutes(app, { requireUser, profiles }) {
     if (!profile) return reply.code(404).send({ error: 'not_found', message: 'No profile for this user' });
     return {
       id: profile.user_id,
+      email: profile.email,
       phone: profile.phone,
       name: profile.name,
       roles: profile.roles,

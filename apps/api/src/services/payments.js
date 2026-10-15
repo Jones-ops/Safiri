@@ -383,12 +383,12 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
     };
   }
 
-  /** "Create account after payment": attach a guest booking to the signed-in traveller with the same phone. */
+  /**
+   * "Create account after payment": attach a guest booking to the signed-in traveller. The route
+   * has already checked the booking's token, which only the guest who held it has.
+   */
   async function claimBooking(bookingId, user) {
-    const { rowCount } = await need().query(
-      `update bookings set user_id = $2 where id = $1 and user_id is null and phone = $3`,
-      [bookingId, user.id, String(user.phone || '').replace(/^\+/, '')],
-    );
+    const { rowCount } = await need().query('update bookings set user_id = $2 where id = $1 and user_id is null', [bookingId, user.id]);
     return rowCount === 1;
   }
 
