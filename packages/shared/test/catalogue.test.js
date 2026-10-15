@@ -26,3 +26,13 @@ test('refund tiers are listed most generous first', () => {
   const tiers = refundTiers([{ days_before: 0, refund_pct: 0 }, { days_before: 30, refund_pct: 100 }, { days_before: 14, refund_pct: 50 }]);
   assert.deepEqual(tiers.map((t) => t.days_before), [30, 14, 0]);
 });
+
+test('refunds follow the tier the cancellation date falls in', () => {
+  const { refundFor } = require('../src/catalogue');
+  const policy = [{ days_before: 30, refund_pct: 100 }, { days_before: 14, refund_pct: 50 }, { days_before: 0, refund_pct: 0 }];
+  assert.deepEqual(refundFor(policy, 45, 7850), { refundPct: 100, refundKes: 7850 });
+  assert.deepEqual(refundFor(policy, 30, 7850), { refundPct: 100, refundKes: 7850 });
+  assert.deepEqual(refundFor(policy, 20, 7851), { refundPct: 50, refundKes: 3925 }, 'rounded down');
+  assert.deepEqual(refundFor(policy, 6, 7850), { refundPct: 0, refundKes: 0 });
+  assert.deepEqual(refundFor([], 60, 1000), { refundPct: 0, refundKes: 0 });
+});

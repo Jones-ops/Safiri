@@ -18,6 +18,14 @@ export const holdTokens = {
       return null;
     }
   },
+  /** Every booking this phone has a token for (guest trips for the Trips tab). */
+  all() {
+    try {
+      return Object.keys(JSON.parse(settingsStore.getString(HOLDS_KEY) || '{}'));
+    } catch {
+      return [];
+    }
+  },
   set(bookingId, token) {
     let all;
     try {

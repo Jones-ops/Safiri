@@ -3,13 +3,18 @@
  *   release-expired-holds  every minute: give back rooms from holds past their 15 minutes
  *   refresh-from-prices    every hour: keep display prices equal to what a quote charges
  *   reconcile-payments     every 2 minutes: settle M-PESA payments still pending (STK Query)
+ *   instalment-plans       daily 08:00: overdue instalments, reminders, missed-payment cancellations
  * Later slices add reminders and payouts here.
  */
+const { todayInKenya } = require('@safiri/shared');
+
 const JOBS = [
   { name: 'release-expired-holds', cron: '* * * * *', run: ({ holds }) => holds.releaseExpired() },
   { name: 'refresh-from-prices', cron: '7 * * * *', run: ({ quotes }) => quotes.refreshFromPrices() },
   // Payments whose Daraja callback never came: settle them with STK Query.
   { name: 'reconcile-payments', cron: '*/2 * * * *', run: ({ payments }) => payments.reconcilePending() },
+  // Daily at 08:00 Nairobi time (never wake people at night): overdue marking, reminders, cancellations.
+  { name: 'instalment-plans', cron: '0 8 * * *', run: ({ plans }) => plans.tick({ today: todayInKenya() }) },
 ];
 
 async function startJobs({ connectionString, log, services }) {

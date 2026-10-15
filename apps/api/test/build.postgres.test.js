@@ -216,7 +216,7 @@ test('the job queue starts and schedules its jobs', async () => {
   const boss = await startJobs({ connectionString: pg.url, log, services: app.services });
   try {
     const { rows } = await db.query(`select name from pgboss.schedule order by name`);
-    assert.deepEqual(rows.map((r) => r.name), ['reconcile-payments', 'refresh-from-prices', 'release-expired-holds']);
+    assert.deepEqual(rows.map((r) => r.name), ['instalment-plans', 'reconcile-payments', 'refresh-from-prices', 'release-expired-holds']);
   } finally {
     await boss.stop({ graceful: false, wait: true });
   }

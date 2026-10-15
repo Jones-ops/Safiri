@@ -80,12 +80,25 @@
     "emptyTitle": "No trips yet",
     "emptyBody": "When you book, your trip, payments and offline itinerary live here.",
     "emptyAction": "Explore trips",
-    "yourTrip": "Your trip"
+    "yourTrip": "Your trip",
+    "progress": "{{paid}} of {{total}} paid",
+    "payNext": "Pay {{amount}} now",
+    "nextDue": "Next: {{amount}} due {{date}}",
+    "status": {
+      "confirmed": "Confirmed",
+      "fully_paid": "Fully paid",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "upcoming": "Upcoming",
+    "past": "Past and cancelled",
+    "loadFailed": "Couldn't load your trips."
   },
   "pay": {
     "title": "Payments",
     "emptyTitle": "Nothing to pay",
-    "emptyBody": "Your deposits and instalments will show here, with a one-tap M-PESA button."
+    "emptyBody": "Your deposits and instalments will show here, with a one-tap M-PESA button.",
+    "overdueSince": "Overdue since {{date}}"
   },
   "profile": {
     "title": "Profile",
@@ -229,7 +242,21 @@
     "privacy": "Privacy",
     "switchLanguage": "Kiswahili",
     "home": "Home",
-    "from": "From {{amount}}"
+    "from": "From {{amount}}",
+    "payTitle": "Pay for booking {{ref}}",
+    "payNext": "Next payment: {{amount}}",
+    "payBalance": "Left to pay in total: {{amount}}",
+    "payPhone": "M-PESA number",
+    "payPhoneHint": "Leave blank to use {{phone}}",
+    "payButton": "Send the M-PESA prompt",
+    "payNothingDue": "There is nothing to pay on this booking right now.",
+    "payNotActive": "This booking is no longer active.",
+    "payWaiting": "Check your phone and enter your M-PESA PIN. This page updates by itself.",
+    "payPaid": "Paid. Thank you! M-PESA receipt {{receipt}}.",
+    "payPaidNoReceipt": "Paid. Thank you!",
+    "payFailed": "The payment didn't go through.",
+    "tryAgain": "Try again",
+    "payNoAppNeeded": "No app needed: the prompt comes to your phone."
   },
   "builder": {
     "title": "Plan your trip",
@@ -280,7 +307,10 @@
     "paymentConfirmed": "Safiri: KES {{amount}} received (M-PESA {{receipt}}). Booking {{ref}} is confirmed.",
     "nextPayment": "Next payment KES {{amount}} due {{date}}.",
     "fullyPaid": "Your trip is fully paid. Safari njema!",
-    "refundDue": "Safiri: we received KES {{amount}} (M-PESA {{receipt}}) after your hold on {{ref}} ended. We will refund it in full within 3 working days."
+    "refundDue": "Safiri: we received KES {{amount}} (M-PESA {{receipt}}) after your hold on {{ref}} ended. We will refund it in full within 3 working days.",
+    "reminder": "Safiri: KES {{amount}} for booking {{ref}} is due {{date}}. Pay with M-PESA: {{link}}",
+    "overdue": "Safiri: KES {{amount}} for booking {{ref}} was due {{date}}. Pay by {{deadline}} to keep your trip: {{link}}",
+    "cancelled": "Safiri: booking {{ref}} was cancelled because the final payment wasn't made by {{deadline}}. Refund due: KES {{refund}}."
   },
   "checkout": {
     "title": "Checkout",
@@ -321,5 +351,19 @@
     "done": "Done",
     "refundDue": "Your payment arrived after the hold ended. We will refund it in full within 3 working days.",
     "smsSent": "We've sent the receipt to your phone by SMS."
+  },
+  "push": {
+    "reminderTitle": "Payment due {{date}}",
+    "reminderBody": "KES {{amount}} for {{ref}}. Tap to pay with M-PESA.",
+    "overdueTitle": "Payment overdue",
+    "overdueBody": "KES {{amount}} for {{ref}}. Pay by {{deadline}} to keep your trip.",
+    "cancelledTitle": "Booking cancelled",
+    "cancelledBody": "{{ref}} was cancelled. Refund due: KES {{refund}}."
+  },
+  "paylink": {
+    "title": "Pay for your trip"
+  },
+  "notifications": {
+    "channelName": "Payments and reminders"
   }
 }

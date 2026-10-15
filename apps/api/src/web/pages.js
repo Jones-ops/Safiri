@@ -1,6 +1,6 @@
 /** Public pages. Every price is the all-in per-person price, with the instalment line. */
 const { formatAmount, formatKes, instalmentPreview, photoUrl, refundLines } = require('@safiri/shared');
-const { html } = require('./html');
+const { html, raw } = require('./html');
 const { page } = require('./layout');
 const { localised } = require('./i18n');
 const { homeGraph, destinationGraph, packageGraph } = require('./jsonld');
@@ -142,10 +142,52 @@ function appOnly(ctx, appPath, path) {
   return page({ ...ctx, path, title: `${t('web.appOnlyTitle')} · Safiri`, description: t('web.appOnlyBody'), noindex: true, appPath, body });
 }
 
+/**
+ * One-tap pay link, for travellers (and friends) without the app: one button sends the
+ * M-PESA prompt. Works without JavaScript; never indexed.
+ */
+function payPage(ctx, { code, target, error }) {
+  const { t } = ctx;
+  const payable = target.bookingStatus === 'confirmed' && target.amountKes > 0;
+  const body = html`<div class="wrap" style="max-width:520px">
+<h1>${t('web.payTitle', { ref: target.ref })}</h1>
+<p class="muted">${target.title || ''}</p>
+${payable
+    ? html`<p class="price">${t('web.payNext', { amount: formatKes(target.amountKes) })}</p>
+<p class="muted">${t('web.payBalance', { amount: formatKes(target.balanceKes) })}</p>
+${error ? html`<p style="color:#B42318"><strong>${t(error)}</strong></p>` : ''}
+<form method="post" action="/pay/${code}${ctx.lang === 'sw' ? '?lang=sw' : ''}">
+<label for="phone"><strong>${t('web.payPhone')}</strong></label><br>
+<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="${t('web.payPhoneHint', { phone: target.phone })}"
+ style="width:100%;min-height:48px;font-size:16px;padding:8px 12px;margin:8px 0 16px;border:1px solid #8A8276;border-radius:8px">
+<button class="btn" type="submit" style="border:0;width:100%;font-size:16px">${t('web.payButton')}</button>
+</form>
+<p class="muted">${t('web.payNoAppNeeded')}</p>`
+    : html`<p>${target.bookingStatus === 'confirmed' || target.bookingStatus === 'fully_paid' ? t('web.payNothingDue') : t('web.payNotActive')}</p>`}
+</div>`;
+  return page({ ...ctx, path: `/pay/${code}`, title: `${t('web.payTitle', { ref: target.ref })} · Safiri`, description: t('web.payNoAppNeeded'), noindex: true, appPath: `pay/${code}`, body });
+}
+
+/** After the prompt is sent: refreshes itself every 4 seconds until the payment settles. */
+function payStatusPage(ctx, { code, payment }) {
+  const { t } = ctx;
+  const done = ['succeeded', 'failed', 'cancelled', 'timed_out'].includes(payment.status);
+  const message = payment.status === 'succeeded'
+    ? (payment.receipt ? t('web.payPaid', { receipt: payment.receipt }) : t('web.payPaidNoReceipt'))
+    : done ? t('web.payFailed') : t('web.payWaiting');
+  const body = html`<div class="wrap" style="max-width:520px">
+${done ? '' : raw('<meta http-equiv="refresh" content="4">')}
+<p class="price">${formatKes(payment.amountKes)}</p>
+<p role="status"><strong>${message}</strong></p>
+${done && payment.status !== 'succeeded' ? html`<p><a class="btn" href="/pay/${code}${ctx.lang === 'sw' ? '?lang=sw' : ''}">${t('web.tryAgain')}</a></p>` : ''}
+</div>`;
+  return page({ ...ctx, path: `/pay/${code}/status/${payment.paymentId}`, title: 'M-PESA · Safiri', description: message, noindex: true, body });
+}
+
 function notFound(ctx, messageKey = 'web.notFound') {
   const { t, lang } = ctx;
   const body = html`<div class="wrap"><h1>${t(messageKey)}</h1><p><a class="btn" href="/${langQuery(lang)}">${t('web.backHome')}</a></p></div>`;
   return page({ ...ctx, path: '/404', title: `${t('web.notFound')} · Safiri`, description: t('web.notFound'), noindex: true, body });
 }
 
-module.exports = { home, destination, packagePage, privacy, appOnly, notFound };
+module.exports = { home, destination, packagePage, privacy, appOnly, payPage, payStatusPage, notFound };

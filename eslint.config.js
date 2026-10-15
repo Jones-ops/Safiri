@@ -20,7 +20,7 @@ module.exports = [
       globals: { ...globals.node },
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     },
   },
   {
@@ -33,7 +33,7 @@ module.exports = [
     },
     rules: {
       // JSX element names count as uses, which core ESLint can't see without the React plugin.
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^[A-Z]' }],
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^[A-Z]', ignoreRestSiblings: true }],
     },
   },
   {

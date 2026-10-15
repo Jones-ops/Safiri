@@ -22,17 +22,18 @@ Update the status column as things move.
 
 ## WhatsApp templates to submit
 
-Utility category unless noted. Variables in `{{ }}`.
+Utility category unless noted. Variables in `{{ }}`. Submit each in English (`en`) and
+Kiswahili (`sw`); the parameter order must match what the API sends (apps/api/src/services/plans.js).
 
 | Template | Sent to | Purpose |
 |---|---|---|
 | `booking_request` | Provider | New booking with Accept / Decline quick replies |
 | `booking_confirmed` | Traveller | Booking ref, dates, next payment |
-| `payment_reminder` | Traveller | Instalment due in 3 days / 1 day, one-tap pay link |
-| `payment_overdue` | Traveller | Missed instalment, grace period end date, pay link |
+| `payment_reminder` | Traveller | Instalment due in 3 days / 1 day. Body parameters, in order: {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} pay link |
+| `payment_overdue` | Traveller | Missed instalment. {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} last day to pay, {{5}} pay link |
 | `payment_received` | Traveller | Receipt with M-PESA code |
 | `share_unpaid` | Group member | Your share of {{trip}} is still unpaid, pay link |
-| `booking_cancelled` | Traveller, provider | Cancellation and what happens next |
+| `booking_cancelled` | Traveller, provider | Cancellation. To travellers: {{1}} booking ref, {{2}} payment deadline that was missed, {{3}} refund amount |
 | `refund_sent` | Traveller | Refund amount and M-PESA code |
 | `trip_tomorrow` | Traveller | Pick-up time, contacts, offline itinerary reminder |
 | `review_request` | Traveller | Ask for a review (may be classed as marketing) |

@@ -57,11 +57,14 @@ const quoteRequestSchema = z
 
 const holdRequestSchema = z.object({ quoteId: z.uuid(), phone: msisdnSchema }).strict();
 
-/** Start an M-PESA payment. The amount is never sent: the server works it out from the option. */
+/**
+ * Start an M-PESA payment. The amount is never sent: the server works it out from the option.
+ * deposit / full: at checkout (held booking). instalment: the next one due. balance: everything left.
+ */
 const paymentRequestSchema = z
   .object({
     bookingId: z.uuid(),
-    option: z.enum(['deposit', 'full']),
+    option: z.enum(['deposit', 'full', 'instalment', 'balance']),
     phone: msisdnSchema,
     token: z.string().max(200).optional(), // guest hold token
   })

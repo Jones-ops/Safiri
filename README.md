@@ -5,8 +5,8 @@ from Nairobi to Naivasha, the Maasai Mara, Diani and Amboseli. KES only, M-PESA 
 
 The full plan (design system, data model, slices, paperwork track) is the build plan document
 "Safiri: Build Plan, Prompt and First Results" (13 Oct 2026).
-Done: **Slice 0 (Foundation)**, **Slice 1 (Discover)**, **Slice 2 (Build)** and **Slice 3a (Pay once)**.
-Next: Slice 3b (instalments, reminders, Ratiba auto-pay).
+Done: Slices **0** (Foundation), **1** (Discover), **2** (Build), **3a** (Pay once) and **3b** (Instalments).
+Next: Slice 3c (group split).
 
 ## What's here
 
@@ -116,6 +116,20 @@ cd apps/mobile && npm run export:android && npm run check:bundle   # bundle + se
 A payment only counts when it matches a payment the API started **and** an STK Query to
 Safaricom confirms it, so forged callbacks do nothing. Replayed callbacks change nothing.
 If a callback never arrives, the API settles the payment with STK Query within 2 minutes.
+
+## Instalments and reminders
+
+Every day at 08:00 (Nairobi) the API's `instalment-plans` job marks missed instalments
+overdue, sends reminders 3 days and 1 day before each due date and once when overdue, and
+cancels bookings whose final payment is still missing after the grace period (rooms go back on
+sale; the refund the cancellation policy allows is recorded). Each reminder carries a one-tap
+pay link (`/pay/<code>`, signed) that opens the app, or a plain web page whose single button
+sends the M-PESA prompt, so no app is needed.
+
+Reminders go by push (signed-in travellers who allowed reminders), plus WhatsApp once
+`WHATSAPP_*` is set and Meta has approved the templates in PAPERWORK.md, with SMS as the backup.
+M-PESA Ratiba auto-pay is not built yet: it needs Safaricom to enable Ratiba on the Daraja
+account first (paperwork track); STK reminders cover every plan until then.
 
 ## App Links (package links open the app)
 

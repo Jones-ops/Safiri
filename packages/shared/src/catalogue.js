@@ -47,4 +47,14 @@ function refundLines(cancelPolicy, t) {
   });
 }
 
-module.exports = { instalmentPreview, photoUrl, refundTiers, refundLines, PHOTO_BUCKET, PHOTO_SIZES };
+/**
+ * What a cancellation refunds: the most generous tier whose days_before the cancellation
+ * still meets, applied to what has been paid. Rounded DOWN to a whole shilling.
+ */
+function refundFor(cancelPolicy, daysBeforeTravel, paidKes) {
+  const tier = refundTiers(cancelPolicy).find((t) => daysBeforeTravel >= t.days_before);
+  const pct = tier ? tier.refund_pct : 0;
+  return { refundPct: pct, refundKes: Math.floor((paidKes * pct) / 100) };
+}
+
+module.exports = { instalmentPreview, photoUrl, refundTiers, refundLines, refundFor, PHOTO_BUCKET, PHOTO_SIZES };

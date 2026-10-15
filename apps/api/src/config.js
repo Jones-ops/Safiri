@@ -20,7 +20,7 @@ const schema = z
     SEND_SMS_HOOK_SECRET: optional, // "v1,whsec_..." from the Supabase Send SMS hook
     // Direct Postgres for money and inventory (transactions, holds) and the pg-boss job queue.
     DATABASE_URL: optional,
-    // Signs the hold token given to guests so only they can view or release their hold.
+    // Signs guest hold tokens and one-tap pay links, so they can't be guessed or forged.
     HOLD_TOKEN_SECRET: optional,
 
     AT_USERNAME: optional, // "sandbox" for the Africa's Talking sandbox
@@ -37,6 +37,11 @@ const schema = z
     DARAJA_PASSKEY: optional,
     DARAJA_CALLBACK_BASE_URL: optional, // public HTTPS origin Daraja can reach (a tunnel in development)
     DARAJA_CALLBACK_SECRET: optional, // random path segment in the callback URL
+
+    // WhatsApp Cloud API (reminders). Off until Meta approves the business and templates;
+    // until then reminders go by push and SMS.
+    WHATSAPP_PHONE_NUMBER_ID: optional,
+    WHATSAPP_ACCESS_TOKEN: optional,
 
     // Android App Links: /.well-known/assetlinks.json lists the app and its signing key(s).
     ANDROID_PACKAGE: z.string().default('ke.safiri.app'),

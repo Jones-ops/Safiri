@@ -5,7 +5,8 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { formatAmount, formatKes, instalmentPreview } = require('@safiri/shared');
+const { formatAmount, formatKes, instalmentPreview, normalizeMsisdn } = require('@safiri/shared');
+const { PaymentError } = require('../services/payments');
 const { pickLanguage, translator } = require('../web/i18n');
 const pages = require('../web/pages');
 
@@ -13,7 +14,7 @@ const SLUG = /^[a-z0-9-]{1,80}$/;
 const ICON = path.join(__dirname, '..', '..', '..', 'mobile', 'assets', 'brand', 'icon.png');
 const PAGE_CACHE = 'public, max-age=300, stale-while-revalidate=3600';
 
-async function webRoutes(app, { config, catalogue }) {
+async function webRoutes(app, { config, catalogue, payments, plans, payLinks }) {
   const base = config.PUBLIC_BASE_URL.replace(/\/$/, '');
 
   function ctx(request) {
@@ -63,8 +64,64 @@ async function webRoutes(app, { config, catalogue }) {
 
   app.get('/privacy', async (request, reply) => sendPage(reply, pages.privacy(ctx(request))));
 
-  // Personal links: the app handles them; the web explains how to open them. Never indexed.
-  for (const [route, appPrefix] of [['/t/:id', 't'], ['/i/:id', 'i'], ['/pay/:id', 'pay']]) {
+  // One-tap pay links work in any browser: one button sends the M-PESA prompt. Never indexed.
+  const privatePage = (reply, body, status = 200) =>
+    reply.code(status).header('x-robots-tag', 'noindex').header('cache-control', 'no-store')
+      .header('content-type', 'text/html; charset=utf-8').send(String(body));
+  const PAY_ERRORS = ['payment_in_progress', 'mpesa_unavailable', 'mpesa_not_configured', 'not_payable', 'amount_over_limit'];
+
+  async function payTarget(code) {
+    const instalmentId = payLinks.instalmentIdFrom(code);
+    const t = instalmentId ? await plans.payLinkTarget(instalmentId) : null;
+    if (!t) return null;
+    return {
+      ref: t.ref, title: t.title, bookingId: t.booking_id, bookingStatus: t.booking_status,
+      amountKes: t.next_kes, balanceKes: t.balance_kes, msisdn: t.phone, phone: `0${t.phone.slice(3, 6)} *** ${t.phone.slice(-3)}`,
+    };
+  }
+
+  // Form posts from the pay page (no JavaScript), parsed only inside this plugin.
+  app.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string' }, (_req, body, done) =>
+    done(null, Object.fromEntries(new URLSearchParams(body))));
+
+  app.get('/pay/:code', async (request, reply) => {
+    const target = await payTarget(request.params.code);
+    if (!target) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    return privatePage(reply, pages.payPage(ctx(request), { code: request.params.code, target }));
+  });
+
+  app.post('/pay/:code', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const { code } = request.params;
+    const target = await payTarget(code);
+    if (!target) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    const typed = String(request.body?.phone || '').trim();
+    const phone = typed ? normalizeMsisdn(typed) : target.msisdn;
+    if (!phone) return privatePage(reply, pages.payPage(ctx(request), { code, target, error: 'errors.phone.invalid' }), 422);
+    try {
+      const started = await payments.startPayment({ bookingId: target.bookingId, option: 'instalment', phone });
+      const lang = ctx(request).lang === 'sw' ? '?lang=sw' : '';
+      return reply.redirect(`/pay/${code}/status/${started.paymentId}${lang}`, 303);
+    } catch (err) {
+      if (!(err instanceof PaymentError)) throw err;
+      const error = PAY_ERRORS.includes(err.code) ? `checkout.errors.${err.code}` : 'errors.generic';
+      return privatePage(reply, pages.payPage(ctx(request), { code, target, error }), err.status);
+    }
+  });
+
+  app.get('/pay/:code/status/:paymentId', async (request, reply) => {
+    const { code, paymentId } = request.params;
+    const target = await payTarget(code);
+    const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!target || !UUID.test(paymentId) || (await payments.paymentBookingId(paymentId)) !== target.bookingId) {
+      return privatePage(reply, pages.notFound(ctx(request)), 404);
+    }
+    const p = await payments.getPayment(paymentId);
+    const payment = { paymentId: p.id, status: p.status, amountKes: p.amount_kes, receipt: p.mpesa_receipt?.startsWith('UNKNOWN-') ? null : p.mpesa_receipt };
+    return privatePage(reply, pages.payStatusPage(ctx(request), { code, payment }));
+  });
+
+  // Trip and invite links: the app handles them; the web explains how to open them. Never indexed.
+  for (const [route, appPrefix] of [['/t/:id', 't'], ['/i/:id', 'i']]) {
     app.get(route, async (request, reply) => {
       const id = String(request.params.id).slice(0, 64).replace(/[^A-Za-z0-9-]/g, '');
       const body = pages.appOnly(ctx(request), `${appPrefix}/${id}`, `/${appPrefix}/${id}`);

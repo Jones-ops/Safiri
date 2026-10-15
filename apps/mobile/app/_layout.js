@@ -15,12 +15,14 @@ import { SessionProvider } from '../src/features/auth/session';
 import { useSettings } from '../src/state/settings';
 import { setAnalyticsConsent, track } from '../src/analytics';
 import { wrapWithSentry } from '../src/lib/sentry';
+import { usePushNotifications } from '../src/features/notifications/push';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function RootStack() {
   const { c, scheme, reduceMotion } = useTheme();
   const { t } = useTranslation();
+  usePushNotifications();
 
   useEffect(() => {
     // Analytics starts only if the user agreed on the Welcome screen.
@@ -54,6 +56,7 @@ function RootStack() {
         <Stack.Screen name="hold/[id]" options={{ title: t('hold.title'), gestureEnabled: false }} />
         <Stack.Screen name="checkout/[id]" options={{ title: t('checkout.title') }} />
         <Stack.Screen name="receipt/[id]" options={{ title: '', gestureEnabled: false }} />
+        <Stack.Screen name="pay/[code]" options={{ title: t('paylink.title') }} />
       </Stack>
     </>
   );

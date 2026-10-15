@@ -17,3 +17,4 @@ export { StatusLabel } from './StatusLabel';
 export { PhotoBackground } from './PhotoBackground';
 export { Checkbox, Chip, SwitchRow, ListRow, SegmentedControl, Stepper } from './Controls';
 export { FaqItem } from './FaqItem';
+export { TripCard } from './TripCard';

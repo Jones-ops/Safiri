@@ -155,6 +155,8 @@ test('a sandbox deposit moves the booking from held to confirmed', async () => {
     assert.equal(room.units_booked, before.rooms[i].units_booked + room.units, 'now booked');
   }
   assert.match(sms.sent.at(-1).message, /KES 7,850 received \(M-PESA TJD4AB12CD\)\. Booking SAF-.{6} is confirmed\. Next payment KES 7,850 due/);
+  const recorded = (await db.query(`select template, channel, status from notifications where booking_id = $1`, [b.bookingId])).rows;
+  assert.deepEqual(recorded, [{ template: 'payment_received', channel: 'sms', status: 'sent' }], 'the receipt SMS is recorded');
 
   const status = await app.inject({ url: `/v1/payments/${start.json().paymentId}?token=${b.holdToken}` });
   assert.equal(status.json().status, 'succeeded');

@@ -1,19 +1,72 @@
-import { ScrollView } from 'react-native';
+/** Trips: upcoming and past bookings with plan progress and "Pay next instalment". */
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { EmptyState } from '../../src/components';
+import { AppText, EmptyState, MpesaPromptSheet, OfflineBanner, Skeleton, TripCard } from '../../src/components';
+import { useTheme } from '../../src/theme/ThemeProvider';
+import { useIsOnline } from '../../src/lib/network';
+import { todayInKenya } from '@safiri/shared';
+import { useMyTrips } from '../../src/features/trips/api';
+import { useTripPayment } from '../../src/features/trips/useTripPayment';
 
-/** Trips: upcoming and past bookings with plan progress (Slice 3). */
 export default function Trips() {
+  const { space } = useTheme();
   const { t } = useTranslation();
+  const online = useIsOnline();
+  const trips = useMyTrips();
+  const payment = useTripPayment();
+  const today = todayInKenya();
+
+  if (trips.isPending) {
+    return (
+      <View style={{ padding: space.xl, gap: space.lg }}>
+        <Skeleton variant="block" height={140} />
+        <Skeleton variant="block" height={140} />
+      </View>
+    );
+  }
+  const all = trips.data || [];
+  if (!all.length) {
+    return (
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+        {trips.isError ? (
+          <EmptyState icon="cloud-offline-outline" tone="danger" title={t('trips.loadFailed')} action={{ label: t('common.retry'), onPress: () => trips.refetch() }} />
+        ) : (
+          <EmptyState icon="map-outline" title={t('trips.emptyTitle')} body={t('trips.emptyBody')} action={{ label: t('trips.emptyAction'), onPress: () => router.navigate('/explore') }} />
+        )}
+      </ScrollView>
+    );
+  }
+
+  const upcoming = all.filter((trip) => trip.status !== 'cancelled' && trip.endDate >= today);
+  const past = all.filter((trip) => !upcoming.includes(trip)).reverse();
+  const section = (title, list) =>
+    list.length ? (
+      <View style={{ gap: space.md }}>
+        <AppText variant="heading" accessibilityRole="header">{title}</AppText>
+        {list.map((trip) => (
+          <TripCard
+            key={trip.bookingId}
+            trip={trip}
+            onPress={() => router.push(`/receipt/${trip.bookingId}`)}
+            onPay={online ? () => payment.payFor(trip) : undefined}
+            paying={payment.flow.busy && payment.payingId === trip.bookingId}
+          />
+        ))}
+      </View>
+    ) : null;
+
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-      <EmptyState
-        icon="map-outline"
-        title={t('trips.emptyTitle')}
-        body={t('trips.emptyBody')}
-        action={{ label: t('trips.emptyAction'), onPress: () => router.navigate('/explore') }}
-      />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <OfflineBanner offline={!online} />
+      <ScrollView
+        contentContainerStyle={{ padding: space.xl, gap: space.xl }}
+        refreshControl={<RefreshControl refreshing={trips.isRefetching} onRefresh={() => trips.refetch()} />}
+      >
+        {section(t('trips.upcoming'), upcoming)}
+        {section(t('trips.past'), past)}
+      </ScrollView>
+      <MpesaPromptSheet {...payment.flow.sheet} phone={payment.phone} />
+    </View>
   );
 }

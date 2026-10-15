@@ -80,12 +80,25 @@
     "emptyTitle": "Bado huna safari",
     "emptyBody": "Ukiweka nafasi, safari yako, malipo na ratiba isiyohitaji mtandao vitakuwa hapa.",
     "emptyAction": "Gundua safari",
-    "yourTrip": "Safari yako"
+    "yourTrip": "Safari yako",
+    "progress": "{{paid}} kati ya {{total}} imelipwa",
+    "payNext": "Lipa {{amount}} sasa",
+    "nextDue": "Ijayo: {{amount}} tarehe {{date}}",
+    "status": {
+      "confirmed": "Imethibitishwa",
+      "fully_paid": "Imelipwa yote",
+      "completed": "Imekamilika",
+      "cancelled": "Imeghairiwa"
+    },
+    "upcoming": "Zijazo",
+    "past": "Zilizopita na zilizoghairiwa",
+    "loadFailed": "Imeshindwa kupakia safari zako."
   },
   "pay": {
     "title": "Malipo",
     "emptyTitle": "Hakuna cha kulipa",
-    "emptyBody": "Amana na awamu zako zitaonekana hapa, na kitufe cha M-PESA cha kubonyeza mara moja."
+    "emptyBody": "Amana na awamu zako zitaonekana hapa, na kitufe cha M-PESA cha kubonyeza mara moja.",
+    "overdueSince": "Imechelewa tangu {{date}}"
   },
   "profile": {
     "title": "Wasifu",
@@ -229,7 +242,21 @@
     "privacy": "Faragha",
     "switchLanguage": "English",
     "home": "Nyumbani",
-    "from": "Kuanzia {{amount}}"
+    "from": "Kuanzia {{amount}}",
+    "payTitle": "Lipia nafasi {{ref}}",
+    "payNext": "Malipo yajayo: {{amount}}",
+    "payBalance": "Kiasi kilichobaki kwa jumla: {{amount}}",
+    "payPhone": "Namba ya M-PESA",
+    "payPhoneHint": "Acha wazi kutumia {{phone}}",
+    "payButton": "Tuma ombi la M-PESA",
+    "payNothingDue": "Hakuna cha kulipa kwa nafasi hii kwa sasa.",
+    "payNotActive": "Nafasi hii haipo tena.",
+    "payWaiting": "Angalia simu yako na uweke PIN yako ya M-PESA. Ukurasa huu utajisasisha wenyewe.",
+    "payPaid": "Imelipwa. Asante! Risiti ya M-PESA {{receipt}}.",
+    "payPaidNoReceipt": "Imelipwa. Asante!",
+    "payFailed": "Malipo hayakufaulu.",
+    "tryAgain": "Jaribu tena",
+    "payNoAppNeeded": "Huhitaji programu: ombi litakuja kwenye simu yako."
   },
   "builder": {
     "title": "Panga safari yako",
@@ -280,7 +307,10 @@
     "paymentConfirmed": "Safiri: Tumepokea KES {{amount}} (M-PESA {{receipt}}). Nafasi {{ref}} imethibitishwa.",
     "nextPayment": "Malipo yajayo KES {{amount}} tarehe {{date}}.",
     "fullyPaid": "Safari yako imelipwa yote. Safari njema!",
-    "refundDue": "Safiri: tumepokea KES {{amount}} (M-PESA {{receipt}}) baada ya muda wa nafasi {{ref}} kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi."
+    "refundDue": "Safiri: tumepokea KES {{amount}} (M-PESA {{receipt}}) baada ya muda wa nafasi {{ref}} kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi.",
+    "reminder": "Safiri: KES {{amount}} ya nafasi {{ref}} inadaiwa tarehe {{date}}. Lipa kwa M-PESA: {{link}}",
+    "overdue": "Safiri: KES {{amount}} ya nafasi {{ref}} ilikuwa inadaiwa tarehe {{date}}. Lipa kabla ya {{deadline}} ili kuhifadhi safari yako: {{link}}",
+    "cancelled": "Safiri: nafasi {{ref}} imeghairiwa kwa sababu malipo ya mwisho hayakufanywa kufikia {{deadline}}. Marejesho: KES {{refund}}."
   },
   "checkout": {
     "title": "Malipo",
@@ -321,5 +351,19 @@
     "done": "Sawa",
     "refundDue": "Malipo yako yalifika baada ya muda wa kushikilia kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi.",
     "smsSent": "Tumekutumia risiti kwa SMS."
+  },
+  "push": {
+    "reminderTitle": "Malipo yanadaiwa {{date}}",
+    "reminderBody": "KES {{amount}} ya {{ref}}. Bonyeza kulipa kwa M-PESA.",
+    "overdueTitle": "Malipo yamechelewa",
+    "overdueBody": "KES {{amount}} ya {{ref}}. Lipa kabla ya {{deadline}} ili kuhifadhi safari yako.",
+    "cancelledTitle": "Nafasi imeghairiwa",
+    "cancelledBody": "{{ref}} imeghairiwa. Marejesho: KES {{refund}}."
+  },
+  "paylink": {
+    "title": "Lipia safari yako"
+  },
+  "notifications": {
+    "channelName": "Malipo na vikumbusho"
   }
 }

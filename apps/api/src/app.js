@@ -12,6 +12,11 @@ const { createQuoteService } = require('./services/quotes');
 const { createHoldService } = require('./services/holds');
 const { createPaymentService } = require('./services/payments');
 const { createDaraja } = require('./integrations/daraja');
+const { createPushClient } = require('./integrations/push');
+const { createWhatsApp } = require('./integrations/whatsapp');
+const { createNotifier } = require('./services/notifier');
+const { createPlanRunner } = require('./services/plans');
+const { createPayLinks } = require('./lib/paylink');
 const { createDb } = require('./lib/db');
 const { requireUser, optionalUser } = require('./lib/auth');
 
@@ -58,6 +63,15 @@ async function buildApp(config, overrides = {}) {
       : null,
   });
   deps.payments = overrides.payments || createPaymentService({ db: deps.db, daraja: deps.daraja, sms: deps.sms, log: app.log });
+  deps.payLinks = createPayLinks(config.HOLD_TOKEN_SECRET);
+  deps.notifier = overrides.notifier || createNotifier({
+    db: deps.db,
+    sms: deps.sms,
+    push: overrides.push || createPushClient(),
+    whatsapp: overrides.whatsapp || createWhatsApp({ phoneNumberId: config.WHATSAPP_PHONE_NUMBER_ID, accessToken: config.WHATSAPP_ACCESS_TOKEN }),
+    log: app.log,
+  });
+  deps.plans = createPlanRunner({ db: deps.db, notifier: deps.notifier, payLinks: deps.payLinks, baseUrl: config.PUBLIC_BASE_URL, log: app.log });
   deps.requireUser = requireUser(deps.verifyToken);
   deps.optionalUser = optionalUser(deps.verifyToken);
 
@@ -72,6 +86,7 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/me'), deps);
   await app.register(require('./routes/build'), deps);
   await app.register(require('./routes/pay'), deps);
+  await app.register(require('./routes/plans'), deps);
   await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);

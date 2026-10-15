@@ -86,8 +86,15 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       await client.query('begin');
       booking = await loadBooking(client, bookingId, { lock: true });
       if (!booking) throw new PaymentError('booking_not_found');
-      if (booking.status !== 'held') throw new PaymentError('not_payable', { status: booking.status });
-      if (!booking.hold_live) throw new PaymentError('hold_expired');
+
+      // deposit / full start a held booking; instalment / balance pay down a confirmed one.
+      const checkout = option === 'deposit' || option === 'full';
+      if (checkout) {
+        if (booking.status !== 'held') throw new PaymentError('not_payable', { status: booking.status });
+        if (!booking.hold_live) throw new PaymentError('hold_expired');
+      } else if (booking.status !== 'confirmed') {
+        throw new PaymentError('not_payable', { status: booking.status });
+      }
 
       const recent = await client.query(
         `select 1 from payments where booking_id = $1 and status in ('initiated', 'pending') and created_at > now() - interval '2 minutes'`,
@@ -95,13 +102,28 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       );
       if (recent.rowCount) throw new PaymentError('payment_in_progress');
 
-      const schedule = scheduleFor(booking);
-      if (option === 'deposit' && schedule.payInFullOnly) throw new PaymentError('deposit_not_available');
-      const amountKes = option === 'deposit' ? schedule.depositKes : booking.total_kes;
+      let amountKes;
+      let chosen = null;
+      if (checkout) {
+        const schedule = scheduleFor(booking);
+        if (option === 'deposit' && schedule.payInFullOnly) throw new PaymentError('deposit_not_available');
+        amountKes = option === 'deposit' ? schedule.depositKes : booking.total_kes;
+        chosen = option === 'deposit'
+          ? schedule
+          : { payInFullOnly: true, depositKes: booking.total_kes, finalDueDate: todayInKenya(now()), payments: [{ seq: 0, amountKes: booking.total_kes, dueDate: todayInKenya(now()) }] };
+      } else if (option === 'instalment') {
+        const next = await client.query(
+          `select amount_kes - paid_kes as left_kes from instalments
+           where booking_id = $1 and status in ('due', 'overdue') order by seq limit 1`,
+          [bookingId],
+        );
+        if (!next.rowCount) throw new PaymentError('not_payable', { status: 'nothing_due' });
+        amountKes = next.rows[0].left_kes;
+      } else {
+        amountKes = booking.total_kes - booking.paid_kes;
+      }
+      if (amountKes <= 0) throw new PaymentError('not_payable', { status: 'nothing_due' });
       if (amountKes > MPESA_MAX_TRANSACTION_KES) throw new PaymentError('amount_over_limit', { maxKes: MPESA_MAX_TRANSACTION_KES });
-      const chosen = option === 'deposit'
-        ? schedule
-        : { payInFullOnly: true, depositKes: booking.total_kes, finalDueDate: todayInKenya(now()), payments: [{ seq: 0, amountKes: booking.total_kes, dueDate: todayInKenya(now()) }] };
 
       const { rows } = await client.query(
         `insert into payments (booking_id, msisdn, amount_kes, status, purpose, schedule)
@@ -110,7 +132,9 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       );
       payment = { id: rows[0].id, amountKes };
       // Keep the rooms while the traveller is entering their PIN.
-      await client.query(`update bookings set hold_expires_at = greatest(hold_expires_at, now() + interval '3 minutes') where id = $1`, [bookingId]);
+      if (checkout) {
+        await client.query(`update bookings set hold_expires_at = greatest(hold_expires_at, now() + interval '3 minutes') where id = $1`, [bookingId]);
+      }
       await client.query('commit');
     } catch (err) {
       await client.query('rollback').catch(() => {});
@@ -128,7 +152,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
         msisdn: phone,
         amountKes: payment.amountKes,
         accountReference: booking.ref,
-        description: option === 'deposit' ? 'Safiri deposit' : 'Safiri trip',
+        description: { deposit: 'Safiri deposit', instalment: 'Instalment', balance: 'Balance' }[option] || 'Safiri trip',
       });
       await db.query(
         `update payments set status = 'pending', merchant_request_id = $2, checkout_request_id = $3 where id = $1`,
@@ -168,7 +192,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       const sent = await sms.send(`+${r.msisdn}`, message).catch((err) => ({ error: err.message }));
       await db.query(
         `insert into notifications (user_id, phone, booking_id, channel, template, payload, status, provider_message_id, sent_at, error)
-         values ($1, $2, $3, 'sms', $4, $5, $6, $7, case when $6 = 'sent' then now() end, $8)`,
+         values ($1, $2, $3, 'sms', $4, $5, $6::notification_status, $7, case when $6::text = 'sent' then now() end, $8)`,
         [r.user_id, r.msisdn, r.booking_id, outcome === 'refund_due' ? 'refund_due' : 'payment_received',
           JSON.stringify({ message }), sent.error ? 'failed' : 'sent', sent.id || null, sent.error || null],
       );
@@ -281,6 +305,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       startDate: b.start_iso,
       endDate: b.end_iso,
       travellers: b.travellers,
+      phone: b.phone, // the owner's own M-PESA number (only owners and token holders see a summary)
       totalKes: b.total_kes,
       paidKes: b.paid_kes,
       holdExpiresAt: b.status === 'held' && b.hold_expires_at ? b.hold_expires_at.toISOString() : null,
