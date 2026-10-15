@@ -6,5 +6,6 @@ module.exports = {
   ...require('./analytics'),
   ...require('./catalogue'),
   ...require('./trip'),
+  ...require('./schedule'),
   i18n: require('./i18n'),
 };

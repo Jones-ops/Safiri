@@ -2,11 +2,14 @@
  * Background jobs on pg-boss (a Postgres-backed queue, so no extra infrastructure).
  *   release-expired-holds  every minute: give back rooms from holds past their 15 minutes
  *   refresh-from-prices    every hour: keep display prices equal to what a quote charges
- * Later slices add reminders, reconciliation and payouts here.
+ *   reconcile-payments     every 2 minutes: settle M-PESA payments still pending (STK Query)
+ * Later slices add reminders and payouts here.
  */
 const JOBS = [
   { name: 'release-expired-holds', cron: '* * * * *', run: ({ holds }) => holds.releaseExpired() },
   { name: 'refresh-from-prices', cron: '7 * * * *', run: ({ quotes }) => quotes.refreshFromPrices() },
+  // Payments whose Daraja callback never came: settle them with STK Query.
+  { name: 'reconcile-payments', cron: '*/2 * * * *', run: ({ payments }) => payments.reconcilePending() },
 ];
 
 async function startJobs({ connectionString, log, services }) {

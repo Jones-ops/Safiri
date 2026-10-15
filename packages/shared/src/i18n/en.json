@@ -270,11 +270,56 @@
     "release": "Release this hold",
     "released": "Hold released. The rooms are back on sale.",
     "pay": "Pay {{amount}} with M-PESA",
-    "payNextUpdate": "M-PESA payment arrives in the next update. Your hold shows how it will work.",
     "soldOut": "Sorry, someone just took the last place. Try other dates.",
     "tooManyHolds": "You already have 3 trips on hold. Finish or release one first.",
     "quoteExpired": "That price has expired. We've fetched a fresh one, please try again.",
     "notFound": "We couldn't find this hold.",
     "dates": "{{from}} to {{to}}"
+  },
+  "sms": {
+    "paymentConfirmed": "Safiri: KES {{amount}} received (M-PESA {{receipt}}). Booking {{ref}} is confirmed.",
+    "nextPayment": "Next payment KES {{amount}} due {{date}}.",
+    "fullyPaid": "Your trip is fully paid. Safari njema!",
+    "refundDue": "Safiri: we received KES {{amount}} (M-PESA {{receipt}}) after your hold on {{ref}} ended. We will refund it in full within 3 working days."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "howToPay": "How do you want to pay?",
+    "payDeposit": "Pay the deposit",
+    "payDepositHint": "{{amount}} now, then {{n}} more payments",
+    "payDepositHintOne": "{{amount}} now, then 1 more payment",
+    "payFull": "Pay in full",
+    "payFullHint": "{{amount}} now, nothing more to pay",
+    "schedule": "Your payment plan",
+    "today": "Today",
+    "mpesaNumber": "M-PESA number",
+    "policy": "If you cancel",
+    "pay": "Pay {{amount}} with M-PESA",
+    "overLimit": "M-PESA takes at most KES 250,000 in one payment.",
+    "heldFor": "Your place is held for {{time}}",
+    "errors": {
+      "payment_in_progress": "A payment prompt is already open on your phone. Wait a minute, then try again.",
+      "hold_expired": "Your hold has ended. Start again for a fresh price.",
+      "mpesa_unavailable": "M-PESA isn't answering right now. Try again in a minute.",
+      "mpesa_not_configured": "M-PESA payments aren't switched on yet.",
+      "deposit_not_available": "Your trip is too soon to pay in instalments. Please pay in full.",
+      "amount_over_limit": "M-PESA takes at most KES 250,000 in one payment. Choose the deposit instead.",
+      "not_payable": "This booking can't be paid now."
+    }
+  },
+  "receipt": {
+    "title": "Booking confirmed",
+    "fullyPaid": "Fully paid",
+    "ref": "Booking ref {{ref}}",
+    "paid": "Paid {{amount}}",
+    "mpesaReceipt": "M-PESA receipt {{code}}",
+    "next": "Next payment {{amount}} on {{date}}",
+    "nothingMore": "Nothing more to pay",
+    "saveAccount": "Save this trip to your account",
+    "saveAccountHint": "Sign in with your phone number to see this trip on any phone.",
+    "saved": "Saved to your account",
+    "done": "Done",
+    "refundDue": "Your payment arrived after the hold ended. We will refund it in full within 3 working days.",
+    "smsSent": "We've sent the receipt to your phone by SMS."
   }
 }

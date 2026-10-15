@@ -211,12 +211,12 @@ test('display prices follow price changes', async () => {
   assert.equal(res.json().perPersonKes, rows[0].from_price_kes);
 });
 
-test('the job queue starts and schedules the hold-release and price jobs', async () => {
+test('the job queue starts and schedules its jobs', async () => {
   const log = { info() {}, warn() {}, error() {} };
   const boss = await startJobs({ connectionString: pg.url, log, services: app.services });
   try {
     const { rows } = await db.query(`select name from pgboss.schedule order by name`);
-    assert.deepEqual(rows.map((r) => r.name), ['refresh-from-prices', 'release-expired-holds']);
+    assert.deepEqual(rows.map((r) => r.name), ['reconcile-payments', 'refresh-from-prices', 'release-expired-holds']);
   } finally {
     await boss.stop({ graceful: false, wait: true });
   }

@@ -5,7 +5,8 @@ from Nairobi to Naivasha, the Maasai Mara, Diani and Amboseli. KES only, M-PESA 
 
 The full plan (design system, data model, slices, paperwork track) is the build plan document
 "Safiri: Build Plan, Prompt and First Results" (13 Oct 2026).
-Done: **Slice 0 (Foundation)**, **Slice 1 (Discover)** and **Slice 2 (Build)**. Next: Slice 3a (pay once with M-PESA).
+Done: **Slice 0 (Foundation)**, **Slice 1 (Discover)**, **Slice 2 (Build)** and **Slice 3a (Pay once)**.
+Next: Slice 3b (instalments, reminders, Ratiba auto-pay).
 
 ## What's here
 
@@ -95,6 +96,26 @@ npm run db:check          # applies migrations + seed to a throwaway Postgres an
 npm run db:seed           # regenerate supabase/seed.sql after editing supabase/seed/data.js
 cd apps/mobile && npm run export:android && npm run check:bundle   # bundle + secrets scan
 ```
+
+## M-PESA (Daraja sandbox)
+
+1. At developer.safaricom.co.ke create an app with **Lipa na M-PESA Sandbox** (and later
+   M-PESA Express Query). Copy its consumer key and secret.
+2. Start a tunnel so Daraja can reach your API: `cloudflared tunnel --url http://localhost:3000`.
+3. In `apps/api/.env` set `DARAJA_CONSUMER_KEY`, `DARAJA_CONSUMER_SECRET`, `DARAJA_SHORTCODE`
+   (sandbox: `174379`), `DARAJA_PASSKEY` (from the Daraja simulator page),
+   `DARAJA_CALLBACK_BASE_URL` (the tunnel URL) and `DARAJA_CALLBACK_SECRET` (any long random string).
+4. Check the settings, then send yourself a KES 1 test prompt:
+   ```sh
+   npm run daraja:check --workspace @safiri/api
+   npm run daraja:check --workspace @safiri/api -- 0712345678
+   ```
+5. In the app: Book a trip, hold it, choose deposit or full, and pay. The booking turns
+   `confirmed` once Safaricom confirms the payment, and the receipt arrives by SMS.
+
+A payment only counts when it matches a payment the API started **and** an STK Query to
+Safaricom confirms it, so forged callbacks do nothing. Replayed callbacks change nothing.
+If a callback never arrives, the API settles the payment with STK Query within 2 minutes.
 
 ## App Links (package links open the app)
 

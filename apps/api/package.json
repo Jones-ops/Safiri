@@ -9,7 +9,8 @@
     "start": "node --env-file-if-exists=.env src/server.js",
     "test": "node --test \"test/**/*.test.js\"",
     "photos:upload": "node --env-file-if-exists=.env scripts/upload-photos.js",
-    "schema:refresh": "node scripts/refresh-schema-vocab.js"
+    "schema:refresh": "node scripts/refresh-schema-vocab.js",
+    "daraja:check": "node --env-file-if-exists=.env scripts/daraja-check.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.1",

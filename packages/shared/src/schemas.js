@@ -57,6 +57,16 @@ const quoteRequestSchema = z
 
 const holdRequestSchema = z.object({ quoteId: z.uuid(), phone: msisdnSchema }).strict();
 
+/** Start an M-PESA payment. The amount is never sent: the server works it out from the option. */
+const paymentRequestSchema = z
+  .object({
+    bookingId: z.uuid(),
+    option: z.enum(['deposit', 'full']),
+    phone: msisdnSchema,
+    token: z.string().max(200).optional(), // guest hold token
+  })
+  .strict();
+
 module.exports = {
   msisdnSchema,
   otpSchema,
@@ -65,5 +75,6 @@ module.exports = {
   profileUpdateSchema,
   quoteRequestSchema,
   holdRequestSchema,
+  paymentRequestSchema,
   z,
 };

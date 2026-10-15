@@ -29,6 +29,15 @@ const schema = z
 
     SENTRY_DSN: optional,
 
+    // M-PESA Daraja (Slice 3a). Sandbox until go-live approval (paperwork track).
+    DARAJA_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
+    DARAJA_CONSUMER_KEY: optional,
+    DARAJA_CONSUMER_SECRET: optional,
+    DARAJA_SHORTCODE: optional,
+    DARAJA_PASSKEY: optional,
+    DARAJA_CALLBACK_BASE_URL: optional, // public HTTPS origin Daraja can reach (a tunnel in development)
+    DARAJA_CALLBACK_SECRET: optional, // random path segment in the callback URL
+
     // Android App Links: /.well-known/assetlinks.json lists the app and its signing key(s).
     ANDROID_PACKAGE: z.string().default('ke.safiri.app'),
     ANDROID_CERT_SHA256: optional, // comma-separated SHA-256 fingerprints (AA:BB:...)

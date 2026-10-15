@@ -10,6 +10,8 @@ const { createProfilesService } = require('./services/profiles');
 const { createCatalogue } = require('./services/catalogue');
 const { createQuoteService } = require('./services/quotes');
 const { createHoldService } = require('./services/holds');
+const { createPaymentService } = require('./services/payments');
+const { createDaraja } = require('./integrations/daraja');
 const { createDb } = require('./lib/db');
 const { requireUser, optionalUser } = require('./lib/auth');
 
@@ -45,6 +47,17 @@ async function buildApp(config, overrides = {}) {
   };
   deps.quotes = overrides.quotes || createQuoteService(deps.db);
   deps.holds = overrides.holds || createHoldService(deps.db, { tokenSecret: config.HOLD_TOKEN_SECRET });
+  deps.daraja = overrides.daraja || createDaraja({
+    env: config.DARAJA_ENV,
+    consumerKey: config.DARAJA_CONSUMER_KEY,
+    consumerSecret: config.DARAJA_CONSUMER_SECRET,
+    shortcode: config.DARAJA_SHORTCODE,
+    passkey: config.DARAJA_PASSKEY,
+    callbackUrl: config.DARAJA_CALLBACK_BASE_URL && config.DARAJA_CALLBACK_SECRET
+      ? `${config.DARAJA_CALLBACK_BASE_URL.replace(/\/$/, '')}/hooks/mpesa/stk/${config.DARAJA_CALLBACK_SECRET}`
+      : null,
+  });
+  deps.payments = overrides.payments || createPaymentService({ db: deps.db, daraja: deps.daraja, sms: deps.sms, log: app.log });
   deps.requireUser = requireUser(deps.verifyToken);
   deps.optionalUser = optionalUser(deps.verifyToken);
 
@@ -58,6 +71,7 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/hooks'), deps);
   await app.register(require('./routes/me'), deps);
   await app.register(require('./routes/build'), deps);
+  await app.register(require('./routes/pay'), deps);
   await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);

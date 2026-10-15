@@ -44,4 +44,9 @@ function driveTimeWarning(driveHours, nights) {
   return Boolean(driveHours) && driveHours >= 4 && nights < 2;
 }
 
-module.exports = { expandLines, addDays, todayInKenya, driveTimeWarning };
+/** Whole days from one calendar date to another ("2026-10-13" -> "2026-10-20" = 7). */
+function daysBetween(fromIso, toIso) {
+  return Math.round((new Date(`${toIso}T00:00:00Z`) - new Date(`${fromIso}T00:00:00Z`)) / 86400000);
+}
+
+module.exports = { expandLines, addDays, daysBetween, todayInKenya, driveTimeWarning };

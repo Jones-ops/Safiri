@@ -52,6 +52,8 @@ function RootStack() {
         <Stack.Screen name="d/[slug]" options={{ title: '' }} />
         <Stack.Screen name="builder" options={{ title: t('builder.title') }} />
         <Stack.Screen name="hold/[id]" options={{ title: t('hold.title'), gestureEnabled: false }} />
+        <Stack.Screen name="checkout/[id]" options={{ title: t('checkout.title') }} />
+        <Stack.Screen name="receipt/[id]" options={{ title: '', gestureEnabled: false }} />
       </Stack>
     </>
   );

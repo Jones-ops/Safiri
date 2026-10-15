@@ -1,6 +1,6 @@
 /**
  * A held booking: 15-minute countdown, booking ref, the price that was held, and release.
- * Paying the deposit with M-PESA (the checkout) is Slice 3a; until then the button explains.
+ * Pay goes to the checkout (deposit or full, with M-PESA).
  */
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
@@ -102,7 +102,7 @@ export default function Hold() {
       </AppText>
 
       <Button label={t('hold.pay', { amount: formatKes(h.totalKes) })} icon="phone-portrait-outline"
-        onPress={() => Alert.alert(t('hold.title'), t('hold.payNextUpdate'))} />
+        onPress={() => router.push(`/checkout/${id}`)} />
       <Button label={t('hold.release')} variant="ghost" onPress={onRelease} loading={release.isPending} />
     </ScrollView>
   );

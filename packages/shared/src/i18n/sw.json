@@ -270,11 +270,56 @@
     "release": "Achilia nafasi hii",
     "released": "Nafasi imeachiliwa. Vyumba vimerudi sokoni.",
     "pay": "Lipa {{amount}} kwa M-PESA",
-    "payNextUpdate": "Malipo ya M-PESA yanakuja katika toleo lijalo. Nafasi yako inaonyesha jinsi yatakavyofanya kazi.",
     "soldOut": "Samahani, mtu amechukua nafasi ya mwisho sasa hivi. Jaribu tarehe nyingine.",
     "tooManyHolds": "Tayari una safari 3 zilizoshikiliwa. Maliza au achilia moja kwanza.",
     "quoteExpired": "Bei hiyo imeisha muda. Tumepata mpya, tafadhali jaribu tena.",
     "notFound": "Hatukupata nafasi hii.",
     "dates": "{{from}} hadi {{to}}"
+  },
+  "sms": {
+    "paymentConfirmed": "Safiri: Tumepokea KES {{amount}} (M-PESA {{receipt}}). Nafasi {{ref}} imethibitishwa.",
+    "nextPayment": "Malipo yajayo KES {{amount}} tarehe {{date}}.",
+    "fullyPaid": "Safari yako imelipwa yote. Safari njema!",
+    "refundDue": "Safiri: tumepokea KES {{amount}} (M-PESA {{receipt}}) baada ya muda wa nafasi {{ref}} kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi."
+  },
+  "checkout": {
+    "title": "Malipo",
+    "howToPay": "Ungependa kulipa vipi?",
+    "payDeposit": "Lipa amana",
+    "payDepositHint": "{{amount}} sasa, kisha malipo mengine {{n}}",
+    "payDepositHintOne": "{{amount}} sasa, kisha malipo 1 zaidi",
+    "payFull": "Lipa yote",
+    "payFullHint": "{{amount}} sasa, hakuna zaidi ya kulipa",
+    "schedule": "Mpango wako wa malipo",
+    "today": "Leo",
+    "mpesaNumber": "Namba ya M-PESA",
+    "policy": "Ukighairi",
+    "pay": "Lipa {{amount}} kwa M-PESA",
+    "overLimit": "M-PESA hupokea hadi KES 250,000 kwa malipo moja.",
+    "heldFor": "Nafasi yako imeshikiliwa kwa {{time}}",
+    "errors": {
+      "payment_in_progress": "Ombi la malipo tayari liko kwenye simu yako. Subiri dakika moja, kisha ujaribu tena.",
+      "hold_expired": "Muda wa kushikilia umeisha. Anza tena upate bei mpya.",
+      "mpesa_unavailable": "M-PESA haijibu kwa sasa. Jaribu tena baada ya dakika moja.",
+      "mpesa_not_configured": "Malipo ya M-PESA bado hayajawashwa.",
+      "deposit_not_available": "Safari yako iko karibu sana kulipa kwa awamu. Tafadhali lipa yote.",
+      "amount_over_limit": "M-PESA hupokea hadi KES 250,000 kwa malipo moja. Chagua amana badala yake.",
+      "not_payable": "Nafasi hii haiwezi kulipiwa sasa."
+    }
+  },
+  "receipt": {
+    "title": "Nafasi imethibitishwa",
+    "fullyPaid": "Imelipwa yote",
+    "ref": "Namba ya nafasi {{ref}}",
+    "paid": "Umelipa {{amount}}",
+    "mpesaReceipt": "Risiti ya M-PESA {{code}}",
+    "next": "Malipo yajayo {{amount}} tarehe {{date}}",
+    "nothingMore": "Hakuna zaidi ya kulipa",
+    "saveAccount": "Hifadhi safari hii kwenye akaunti yako",
+    "saveAccountHint": "Ingia kwa namba yako ya simu uone safari hii kwenye simu yoyote.",
+    "saved": "Imehifadhiwa kwenye akaunti yako",
+    "done": "Sawa",
+    "refundDue": "Malipo yako yalifika baada ya muda wa kushikilia kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi.",
+    "smsSent": "Tumekutumia risiti kwa SMS."
   }
 }
