@@ -48,7 +48,7 @@ export default function Trips() {
           <TripCard
             key={trip.bookingId}
             trip={trip}
-            onPress={() => router.push(`/receipt/${trip.bookingId}`)}
+            onPress={() => router.push(trip.isGroup ? `/group/${trip.bookingId}` : `/receipt/${trip.bookingId}`)}
             onPay={online ? () => payment.payFor(trip) : undefined}
             paying={payment.flow.busy && payment.payingId === trip.bookingId}
           />

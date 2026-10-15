@@ -142,7 +142,8 @@
     "overdue": "Overdue",
     "pending": "Waiting",
     "failed": "Failed",
-    "notPaid": "Not paid"
+    "notPaid": "Not paid",
+    "removed": "Covered"
   },
   "trust": {
     "verified": "Verified",
@@ -256,7 +257,14 @@
     "payPaidNoReceipt": "Paid. Thank you!",
     "payFailed": "The payment didn't go through.",
     "tryAgain": "Try again",
-    "payNoAppNeeded": "No app needed: the prompt comes to your phone."
+    "payNoAppNeeded": "No app needed: the prompt comes to your phone.",
+    "inviteTitle": "{{organiser}} invited you to {{title}}",
+    "inviteShare": "Your share: {{amount}}",
+    "invitePaidSoFar": "Paid so far: {{amount}}",
+    "inviteDeadline": "Please pay by {{date}}",
+    "inviteDone": "Your share is paid. Enjoy the trip!",
+    "inviteClosed": "This trip is no longer taking payments.",
+    "inviteBooking": "Booking {{ref}}"
   },
   "builder": {
     "title": "Plan your trip",
@@ -310,7 +318,9 @@
     "refundDue": "Safiri: we received KES {{amount}} (M-PESA {{receipt}}) after your hold on {{ref}} ended. We will refund it in full within 3 working days.",
     "reminder": "Safiri: KES {{amount}} for booking {{ref}} is due {{date}}. Pay with M-PESA: {{link}}",
     "overdue": "Safiri: KES {{amount}} for booking {{ref}} was due {{date}}. Pay by {{deadline}} to keep your trip: {{link}}",
-    "cancelled": "Safiri: booking {{ref}} was cancelled because the final payment wasn't made by {{deadline}}. Refund due: KES {{refund}}."
+    "cancelled": "Safiri: booking {{ref}} was cancelled because the final payment wasn't made by {{deadline}}. Refund due: KES {{refund}}.",
+    "sharePaid": "Safiri: KES {{amount}} received (M-PESA {{receipt}}) for your share of booking {{ref}}. Thank you!",
+    "groupUnpaid": "Safiri: {{n}} of your group still owe KES {{amount}} for booking {{ref}}, due {{date}}. Remind them, or cover their share in the app."
   },
   "checkout": {
     "title": "Checkout",
@@ -358,12 +368,55 @@
     "overdueTitle": "Payment overdue",
     "overdueBody": "KES {{amount}} for {{ref}}. Pay by {{deadline}} to keep your trip.",
     "cancelledTitle": "Booking cancelled",
-    "cancelledBody": "{{ref}} was cancelled. Refund due: KES {{refund}}."
+    "cancelledBody": "{{ref}} was cancelled. Refund due: KES {{refund}}.",
+    "groupUnpaidTitle": "Friends still to pay",
+    "groupUnpaidBody": "{{n}} still owe KES {{amount}} for {{ref}}, due {{date}}."
   },
   "paylink": {
     "title": "Pay for your trip"
   },
   "notifications": {
     "channelName": "Payments and reminders"
+  },
+  "group": {
+    "title": "Split with friends",
+    "yourName": "Your name",
+    "friends": "Friends paying a share",
+    "addFriend": "Add a friend",
+    "friendName": "Friend's name",
+    "removeFriend": "Remove",
+    "equal": "Equal shares",
+    "custom": "Custom amounts",
+    "shareOf": "{{name}}'s share",
+    "sharesMustAddUp": "Shares must add up to {{amount}} (now {{now}})",
+    "create": "Create invite links",
+    "maxFriends": "Up to {{n}} friends for {{travellers}} travellers",
+    "howItWorks": "Each friend gets a link and pays their share with M-PESA. No app needed. The trip is confirmed once paid shares reach the {{deposit}} deposit.",
+    "deadlineHold": "Shares must reach the deposit within {{countdown}}, or the rooms go back on sale.",
+    "deadlineFinal": "Everyone pays by {{date}}.",
+    "confirmed": "Deposit reached: your trip is confirmed",
+    "paidOf": "{{paid}} of {{total}} paid",
+    "inviteWhatsApp": "Send on WhatsApp",
+    "inviteMessage": "Hi {{name}}! I've booked {{title}} on Safiri. Your share is {{amount}}. Pay with M-PESA here (no app needed): {{link}}",
+    "payMine": "Pay my share {{amount}}",
+    "cover": "Cover their share",
+    "coverConfirm": "You will pay {{amount}} more and {{name}} won't need to pay. Continue?",
+    "you": "You",
+    "live": "Updates live as friends pay",
+    "errors": {
+      "too_many_people": "More people than travellers on this booking.",
+      "organiser_is_friend": "That's your own number. Add your friends' numbers.",
+      "shares_do_not_add_up": "The shares don't add up to the total.",
+      "invalid_share": "Every share must be at least KES 1.",
+      "share_over_limit": "M-PESA takes at most KES 250,000 per share.",
+      "not_splittable": "This booking can't be split now.",
+      "already_paid": "Payment has started on this booking, so it can't be split.",
+      "hold_expired": "Your hold has ended. Start again for a fresh price.",
+      "payment_in_progress": "A payment prompt is open. Try again in a minute."
+    }
+  },
+  "invite": {
+    "title": "Your share of a trip",
+    "from": "{{organiser}} invited you"
   }
 }

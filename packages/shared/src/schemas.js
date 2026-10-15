@@ -70,7 +70,20 @@ const paymentRequestSchema = z
   })
   .strict();
 
+/** Organiser splits a held booking. Shares are custom amounts, or left out for equal shares. */
+const splitRequestSchema = z
+  .object({
+    organiserName: z.string().trim().min(1).max(60),
+    friends: z.array(z.object({ name: z.string().trim().min(1).max(60), phone: msisdnSchema })).min(1).max(19),
+    shares: z.array(z.number().int()).optional(), // organiser first, then friends in order
+    token: z.string().max(200).optional(),
+  })
+  .strict()
+  .refine((r) => !r.shares || r.shares.length === r.friends.length + 1, { message: 'split.sharesCount' })
+  .refine((r) => new Set(r.friends.map((f) => f.phone)).size === r.friends.length, { message: 'split.duplicatePhone' });
+
 module.exports = {
+  splitRequestSchema,
   msisdnSchema,
   otpSchema,
   languageSchema,

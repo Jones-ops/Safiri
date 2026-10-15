@@ -32,7 +32,7 @@ Kiswahili (`sw`); the parameter order must match what the API sends (apps/api/sr
 | `payment_reminder` | Traveller | Instalment due in 3 days / 1 day. Body parameters, in order: {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} pay link |
 | `payment_overdue` | Traveller | Missed instalment. {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} last day to pay, {{5}} pay link |
 | `payment_received` | Traveller | Receipt with M-PESA code |
-| `share_unpaid` | Group member | Your share of {{trip}} is still unpaid, pay link |
+| `share_unpaid` | Group organiser | Friends still owe. {{1}} how many, {{2}} amount owed, {{3}} booking ref, {{4}} due date |
 | `booking_cancelled` | Traveller, provider | Cancellation. To travellers: {{1}} booking ref, {{2}} payment deadline that was missed, {{3}} refund amount |
 | `refund_sent` | Traveller | Refund amount and M-PESA code |
 | `trip_tomorrow` | Traveller | Pick-up time, contacts, offline itinerary reminder |

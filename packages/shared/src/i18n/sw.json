@@ -142,7 +142,8 @@
     "overdue": "Imechelewa",
     "pending": "Inasubiri",
     "failed": "Imeshindwa",
-    "notPaid": "Haijalipwa"
+    "notPaid": "Haijalipwa",
+    "removed": "Imelipiwa"
   },
   "trust": {
     "verified": "Imethibitishwa",
@@ -256,7 +257,14 @@
     "payPaidNoReceipt": "Imelipwa. Asante!",
     "payFailed": "Malipo hayakufaulu.",
     "tryAgain": "Jaribu tena",
-    "payNoAppNeeded": "Huhitaji programu: ombi litakuja kwenye simu yako."
+    "payNoAppNeeded": "Huhitaji programu: ombi litakuja kwenye simu yako.",
+    "inviteTitle": "{{organiser}} amekualika kwenye {{title}}",
+    "inviteShare": "Sehemu yako: {{amount}}",
+    "invitePaidSoFar": "Umelipa hadi sasa: {{amount}}",
+    "inviteDeadline": "Tafadhali lipa kabla ya {{date}}",
+    "inviteDone": "Sehemu yako imelipwa. Furahia safari!",
+    "inviteClosed": "Safari hii haipokei malipo tena.",
+    "inviteBooking": "Nafasi {{ref}}"
   },
   "builder": {
     "title": "Panga safari yako",
@@ -310,7 +318,9 @@
     "refundDue": "Safiri: tumepokea KES {{amount}} (M-PESA {{receipt}}) baada ya muda wa nafasi {{ref}} kuisha. Tutakurudishia pesa zote ndani ya siku 3 za kazi.",
     "reminder": "Safiri: KES {{amount}} ya nafasi {{ref}} inadaiwa tarehe {{date}}. Lipa kwa M-PESA: {{link}}",
     "overdue": "Safiri: KES {{amount}} ya nafasi {{ref}} ilikuwa inadaiwa tarehe {{date}}. Lipa kabla ya {{deadline}} ili kuhifadhi safari yako: {{link}}",
-    "cancelled": "Safiri: nafasi {{ref}} imeghairiwa kwa sababu malipo ya mwisho hayakufanywa kufikia {{deadline}}. Marejesho: KES {{refund}}."
+    "cancelled": "Safiri: nafasi {{ref}} imeghairiwa kwa sababu malipo ya mwisho hayakufanywa kufikia {{deadline}}. Marejesho: KES {{refund}}.",
+    "sharePaid": "Safiri: Tumepokea KES {{amount}} (M-PESA {{receipt}}) kwa sehemu yako ya nafasi {{ref}}. Asante!",
+    "groupUnpaid": "Safiri: {{n}} wa kikundi chako bado wanadaiwa KES {{amount}} kwa nafasi {{ref}}, tarehe {{date}}. Wakumbushe, au lipia sehemu yao kwenye programu."
   },
   "checkout": {
     "title": "Malipo",
@@ -358,12 +368,55 @@
     "overdueTitle": "Malipo yamechelewa",
     "overdueBody": "KES {{amount}} ya {{ref}}. Lipa kabla ya {{deadline}} ili kuhifadhi safari yako.",
     "cancelledTitle": "Nafasi imeghairiwa",
-    "cancelledBody": "{{ref}} imeghairiwa. Marejesho: KES {{refund}}."
+    "cancelledBody": "{{ref}} imeghairiwa. Marejesho: KES {{refund}}.",
+    "groupUnpaidTitle": "Marafiki bado hawajalipa",
+    "groupUnpaidBody": "{{n}} bado wanadaiwa KES {{amount}} kwa {{ref}}, tarehe {{date}}."
   },
   "paylink": {
     "title": "Lipia safari yako"
   },
   "notifications": {
     "channelName": "Malipo na vikumbusho"
+  },
+  "group": {
+    "title": "Gawanya na marafiki",
+    "yourName": "Jina lako",
+    "friends": "Marafiki wanaolipa sehemu",
+    "addFriend": "Ongeza rafiki",
+    "friendName": "Jina la rafiki",
+    "removeFriend": "Ondoa",
+    "equal": "Sehemu sawa",
+    "custom": "Kiasi maalum",
+    "shareOf": "Sehemu ya {{name}}",
+    "sharesMustAddUp": "Sehemu lazima zifike {{amount}} (sasa {{now}})",
+    "create": "Tengeneza viungo vya mwaliko",
+    "maxFriends": "Hadi marafiki {{n}} kwa wasafiri {{travellers}}",
+    "howItWorks": "Kila rafiki anapata kiungo na analipa sehemu yake kwa M-PESA. Huhitaji programu. Safari inathibitishwa sehemu zilizolipwa zikifika amana ya {{deposit}}.",
+    "deadlineHold": "Sehemu lazima zifike amana ndani ya {{countdown}}, la sivyo vyumba vinarudi sokoni.",
+    "deadlineFinal": "Kila mtu alipe kabla ya {{date}}.",
+    "confirmed": "Amana imefikiwa: safari yako imethibitishwa",
+    "paidOf": "{{paid}} kati ya {{total}} imelipwa",
+    "inviteWhatsApp": "Tuma kwa WhatsApp",
+    "inviteMessage": "Habari {{name}}! Nimeweka nafasi ya {{title}} kwenye Safiri. Sehemu yako ni {{amount}}. Lipa kwa M-PESA hapa (huhitaji programu): {{link}}",
+    "payMine": "Lipa sehemu yangu {{amount}}",
+    "cover": "Lipia sehemu yake",
+    "coverConfirm": "Utalipa {{amount}} zaidi na {{name}} hatahitaji kulipa. Endelea?",
+    "you": "Wewe",
+    "live": "Inajisasisha marafiki wanapolipa",
+    "errors": {
+      "too_many_people": "Watu ni wengi kuliko wasafiri wa nafasi hii.",
+      "organiser_is_friend": "Hiyo ni namba yako. Ongeza namba za marafiki zako.",
+      "shares_do_not_add_up": "Sehemu hazifiki jumla.",
+      "invalid_share": "Kila sehemu iwe angalau KES 1.",
+      "share_over_limit": "M-PESA hupokea hadi KES 250,000 kwa kila sehemu.",
+      "not_splittable": "Nafasi hii haiwezi kugawanywa sasa.",
+      "already_paid": "Malipo yameanza kwa nafasi hii, kwa hiyo haiwezi kugawanywa.",
+      "hold_expired": "Muda wa kushikilia umeisha. Anza tena upate bei mpya.",
+      "payment_in_progress": "Ombi la malipo liko wazi. Jaribu tena baada ya dakika moja."
+    }
+  },
+  "invite": {
+    "title": "Sehemu yako ya safari",
+    "from": "{{organiser}} amekualika"
   }
 }

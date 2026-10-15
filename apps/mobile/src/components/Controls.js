@@ -1,8 +1,8 @@
 /** Small form controls: Checkbox, SwitchRow, ListRow and SegmentedControl. All 48dp+ targets. */
-import { Pressable, Switch, View } from 'react-native';
+import { Pressable, Switch, TextInput, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../theme/ThemeProvider';
-import { touchTarget } from '../theme/tokens';
+import { maxFontScale, touchTarget } from '../theme/tokens';
 import { AppText } from './AppText';
 
 export function Checkbox({ checked, onChange, label, required }) {
@@ -199,6 +199,30 @@ export function Stepper({ label, hint, value, min = 1, max = 20, onChange }) {
         {value}
       </AppText>
       {button('add', value + 1, value >= max, `${label} +1`)}
+    </View>
+  );
+}
+
+/** A labelled text field, 48dp tall, scaling with the phone's font size. */
+export function TextField({ label, value, onChangeText, placeholder, keyboardType, error, maxLength = 60 }) {
+  const { c, radius, space, type } = useTheme();
+  return (
+    <View style={{ gap: space.xs, flex: 1 }}>
+      {label ? <AppText variant="label">{label}</AppText> : null}
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={c.textMuted}
+        keyboardType={keyboardType}
+        maxLength={maxLength}
+        maxFontSizeMultiplier={maxFontScale}
+        accessibilityLabel={label || placeholder}
+        style={[type.body, {
+          minHeight: touchTarget, paddingHorizontal: space.md, color: c.text, backgroundColor: c.surface,
+          borderWidth: error ? 2 : 1, borderColor: error ? c.danger : c.inputBorder, borderRadius: radius.input,
+        }]}
+      />
     </View>
   );
 }

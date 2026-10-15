@@ -168,8 +168,11 @@ ${error ? html`<p style="color:#B42318"><strong>${t(error)}</strong></p>` : ''}
   return page({ ...ctx, path: `/pay/${code}`, title: `${t('web.payTitle', { ref: target.ref })} · Safiri`, description: t('web.payNoAppNeeded'), noindex: true, appPath: `pay/${code}`, body });
 }
 
-/** After the prompt is sent: refreshes itself every 4 seconds until the payment settles. */
-function payStatusPage(ctx, { code, payment }) {
+/**
+ * After the prompt is sent: refreshes itself every 4 seconds until the payment settles.
+ * basePath is the page that sent it (/pay/<code> or /i/<code>), for "try again".
+ */
+function payStatusPage(ctx, { basePath, payment }) {
   const { t } = ctx;
   const done = ['succeeded', 'failed', 'cancelled', 'timed_out'].includes(payment.status);
   const message = payment.status === 'succeeded'
@@ -179,9 +182,42 @@ function payStatusPage(ctx, { code, payment }) {
 ${done ? '' : raw('<meta http-equiv="refresh" content="4">')}
 <p class="price">${formatKes(payment.amountKes)}</p>
 <p role="status"><strong>${message}</strong></p>
-${done && payment.status !== 'succeeded' ? html`<p><a class="btn" href="/pay/${code}${ctx.lang === 'sw' ? '?lang=sw' : ''}">${t('web.tryAgain')}</a></p>` : ''}
+${done && payment.status !== 'succeeded' ? html`<p><a class="btn" href="${basePath}${langQuery(ctx.lang)}">${t('web.tryAgain')}</a></p>` : ''}
 </div>`;
-  return page({ ...ctx, path: `/pay/${code}/status/${payment.paymentId}`, title: 'M-PESA · Safiri', description: message, noindex: true, body });
+  return page({ ...ctx, path: `${basePath}/status/${payment.paymentId}`, title: 'M-PESA · Safiri', description: message, noindex: true, body });
+}
+
+/** "2026-11-30" -> "30 Nov 2026", with Kiswahili month names on Kiswahili pages. */
+const MONTHS = {
+  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  sw: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
+};
+const longDate = (iso, lang) => `${Number(iso.slice(8, 10))} ${(MONTHS[lang] || MONTHS.en)[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
+
+/** A friend's invite to a group trip: their share and one button to pay it. No app needed. */
+function invitePage(ctx, { code, invite, error }) {
+  const { t, lang } = ctx;
+  const heading = t('web.inviteTitle', { organiser: invite.organiserName, title: invite.title || invite.ref });
+  // Before confirmation the deadline is the hold (a time); after, the final due date (a date).
+  const deadline = invite.deadline && invite.deadline.length === 10 ? longDate(invite.deadline, lang) : null;
+  const body = html`<div class="wrap" style="max-width:520px">
+<h1>${heading}</h1>
+<p class="muted">${t('web.inviteBooking', { ref: invite.ref })}</p>
+<p class="price">${t('web.inviteShare', { amount: formatKes(invite.shareKes) })}</p>
+${invite.paidKes ? html`<p>${t('web.invitePaidSoFar', { amount: formatKes(invite.paidKes) })}</p>` : ''}
+${invite.payable
+    ? html`${deadline ? html`<p class="muted">${t('web.inviteDeadline', { date: deadline })}</p>` : ''}
+${error ? html`<p style="color:#B42318"><strong>${t(error)}</strong></p>` : ''}
+<form method="post" action="/i/${code}${langQuery(lang)}">
+<label for="phone"><strong>${t('web.payPhone')}</strong></label><br>
+<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="${t('web.payPhoneHint', { phone: invite.phone })}"
+ style="width:100%;min-height:48px;font-size:16px;padding:8px 12px;margin:8px 0 16px;border:1px solid #8A8276;border-radius:8px">
+<button class="btn" type="submit" style="border:0;width:100%;font-size:16px">${t('checkout.pay', { amount: formatKes(invite.leftKes) })}</button>
+</form>
+<p class="muted">${t('web.payNoAppNeeded')}</p>`
+    : html`<p><strong>${invite.leftKes === 0 ? t('web.inviteDone') : t('web.inviteClosed')}</strong></p>`}
+</div>`;
+  return page({ ...ctx, path: `/i/${code}`, title: `${heading} · Safiri`, description: t('web.payNoAppNeeded'), noindex: true, appPath: `i/${code}`, body });
 }
 
 function notFound(ctx, messageKey = 'web.notFound') {
@@ -190,4 +226,4 @@ function notFound(ctx, messageKey = 'web.notFound') {
   return page({ ...ctx, path: '/404', title: `${t('web.notFound')} · Safiri`, description: t('web.notFound'), noindex: true, body });
 }
 
-module.exports = { home, destination, packagePage, privacy, appOnly, payPage, payStatusPage, notFound };
+module.exports = { home, destination, packagePage, privacy, appOnly, payPage, payStatusPage, invitePage, notFound };

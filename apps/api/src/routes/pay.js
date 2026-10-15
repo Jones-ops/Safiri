@@ -11,9 +11,9 @@ const crypto = require('node:crypto');
 const { paymentRequestSchema } = require('@safiri/shared');
 const { PaymentError } = require('../services/payments');
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const { UUID } = require('../lib/access');
 
-async function payRoutes(app, { config, payments, holds, optionalUser, requireUser }) {
+async function payRoutes(app, { config, payments, mayAccess, optionalUser, requireUser }) {
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof PaymentError) {
       return reply.code(err.status).send({ error: err.code, ...(err.details ? { details: err.details } : {}) });
@@ -22,15 +22,6 @@ async function payRoutes(app, { config, payments, holds, optionalUser, requireUs
     request.log.error({ err }, 'payment route failed');
     return reply.code(500).send({ error: 'server_error' });
   });
-
-  /** True when the request may see this booking. Never reveals whether it exists. */
-  async function mayAccess(request, bookingId, token) {
-    if (!UUID.test(String(bookingId))) return false;
-    const owner = await payments.bookingOwner(bookingId);
-    if (!owner) return false;
-    if (owner.user_id && request.user?.id === owner.user_id) return true;
-    return holds.tokenMatches(bookingId, token);
-  }
 
   app.get('/v1/bookings/:id', { preHandler: optionalUser }, async (request, reply) => {
     if (!(await mayAccess(request, request.params.id, request.query.token))) return reply.code(404).send({ error: 'not_found' });

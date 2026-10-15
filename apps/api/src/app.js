@@ -17,6 +17,8 @@ const { createWhatsApp } = require('./integrations/whatsapp');
 const { createNotifier } = require('./services/notifier');
 const { createPlanRunner } = require('./services/plans');
 const { createPayLinks } = require('./lib/paylink');
+const { createBookingAccess } = require('./lib/access');
+const { createGroupService } = require('./services/groups');
 const { createDb } = require('./lib/db');
 const { requireUser, optionalUser } = require('./lib/auth');
 
@@ -72,6 +74,8 @@ async function buildApp(config, overrides = {}) {
     log: app.log,
   });
   deps.plans = createPlanRunner({ db: deps.db, notifier: deps.notifier, payLinks: deps.payLinks, baseUrl: config.PUBLIC_BASE_URL, log: app.log });
+  deps.groups = createGroupService({ db: deps.db, baseUrl: config.PUBLIC_BASE_URL });
+  deps.mayAccess = createBookingAccess({ payments: deps.payments, holds: deps.holds });
   deps.requireUser = requireUser(deps.verifyToken);
   deps.optionalUser = optionalUser(deps.verifyToken);
 
@@ -87,6 +91,7 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/build'), deps);
   await app.register(require('./routes/pay'), deps);
   await app.register(require('./routes/plans'), deps);
+  await app.register(require('./routes/groups'), deps);
   await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);

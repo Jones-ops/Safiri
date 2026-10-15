@@ -5,8 +5,8 @@ from Nairobi to Naivasha, the Maasai Mara, Diani and Amboseli. KES only, M-PESA 
 
 The full plan (design system, data model, slices, paperwork track) is the build plan document
 "Safiri: Build Plan, Prompt and First Results" (13 Oct 2026).
-Done: Slices **0** (Foundation), **1** (Discover), **2** (Build), **3a** (Pay once) and **3b** (Instalments).
-Next: Slice 3c (group split).
+Done: Slices **0** (Foundation), **1** (Discover), **2** (Build), **3a** (Pay once), **3b** (Instalments)
+and **3c** (Group split). Next: test with 5 real travellers (build plan step 7), then Slice 4 (Travel).
 
 ## What's here
 
@@ -130,6 +130,17 @@ Reminders go by push (signed-in travellers who allowed reminders), plus WhatsApp
 `WHATSAPP_*` is set and Meta has approved the templates in PAPERWORK.md, with SMS as the backup.
 M-PESA Ratiba auto-pay is not built yet: it needs Safaricom to enable Ratiba on the Daraja
 account first (paperwork track); STK reminders cover every plan until then.
+
+## Group split
+
+At checkout the organiser can split a held booking with friends: names, M-PESA numbers, and
+equal or custom shares (shares must add up to the total; the organiser takes any odd
+shillings). The hold grows from 15 to 60 minutes so friends can pay. Each friend gets an
+invite link (`/i/<code>`) that opens the app or a plain web page with one Pay button, so no app
+is needed. The trip confirms as soon as paid shares reach the deposit; the rest is due by the
+final due date, and the organiser is reminded 3 days and 1 day before who still owes. If a
+friend won't pay, the organiser can cover their share. The organiser's screen updates live
+(Supabase Realtime when signed in, plus polling every 3 seconds).
 
 ## App Links (package links open the app)
 

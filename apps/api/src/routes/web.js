@@ -7,6 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { formatAmount, formatKes, instalmentPreview, normalizeMsisdn } = require('@safiri/shared');
 const { PaymentError } = require('../services/payments');
+const { UUID } = require('../lib/access');
 const { pickLanguage, translator } = require('../web/i18n');
 const pages = require('../web/pages');
 
@@ -14,7 +15,7 @@ const SLUG = /^[a-z0-9-]{1,80}$/;
 const ICON = path.join(__dirname, '..', '..', '..', 'mobile', 'assets', 'brand', 'icon.png');
 const PAGE_CACHE = 'public, max-age=300, stale-while-revalidate=3600';
 
-async function webRoutes(app, { config, catalogue, payments, plans, payLinks }) {
+async function webRoutes(app, { config, catalogue, payments, plans, payLinks, groups }) {
   const base = config.PUBLIC_BASE_URL.replace(/\/$/, '');
 
   function ctx(request) {
@@ -108,20 +109,55 @@ async function webRoutes(app, { config, catalogue, payments, plans, payLinks }) 
     }
   });
 
+  const toStatus = (p) => ({ paymentId: p.id, status: p.status, amountKes: p.amount_kes, receipt: p.mpesa_receipt?.startsWith('UNKNOWN-') ? null : p.mpesa_receipt });
+
   app.get('/pay/:code/status/:paymentId', async (request, reply) => {
     const { code, paymentId } = request.params;
     const target = await payTarget(code);
-    const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!target || !UUID.test(paymentId) || (await payments.paymentBookingId(paymentId)) !== target.bookingId) {
       return privatePage(reply, pages.notFound(ctx(request)), 404);
     }
     const p = await payments.getPayment(paymentId);
-    const payment = { paymentId: p.id, status: p.status, amountKes: p.amount_kes, receipt: p.mpesa_receipt?.startsWith('UNKNOWN-') ? null : p.mpesa_receipt };
-    return privatePage(reply, pages.payStatusPage(ctx(request), { code, payment }));
+    return privatePage(reply, pages.payStatusPage(ctx(request), { basePath: `/pay/${code}`, payment: toStatus(p) }));
   });
 
-  // Trip and invite links: the app handles them; the web explains how to open them. Never indexed.
-  for (const [route, appPrefix] of [['/t/:id', 't'], ['/i/:id', 'i']]) {
+  // Group invites: a friend pays their share from the link, no app needed. Never indexed.
+  app.get('/i/:code', async (request, reply) => {
+    const invite = await groups.inviteTarget(request.params.code);
+    if (!invite) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    return privatePage(reply, pages.invitePage(ctx(request), { code: request.params.code, invite }));
+  });
+
+  app.post('/i/:code', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const { code } = request.params;
+    const invite = await groups.inviteTarget(code);
+    if (!invite) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    const typed = String(request.body?.phone || '').trim();
+    const phone = typed ? normalizeMsisdn(typed) : invite.msisdn;
+    if (!phone) return privatePage(reply, pages.invitePage(ctx(request), { code, invite, error: 'errors.phone.invalid' }), 422);
+    try {
+      const started = await payments.startSharePayment({ memberId: invite.memberId, phone });
+      const lang = ctx(request).lang === 'sw' ? '?lang=sw' : '';
+      return reply.redirect(`/i/${code}/status/${started.paymentId}${lang}`, 303);
+    } catch (err) {
+      if (!(err instanceof PaymentError)) throw err;
+      const known = [...PAY_ERRORS, 'hold_expired'];
+      const error = known.includes(err.code) ? `checkout.errors.${err.code}` : 'errors.generic';
+      return privatePage(reply, pages.invitePage(ctx(request), { code, invite, error }), err.status);
+    }
+  });
+
+  app.get('/i/:code/status/:paymentId', async (request, reply) => {
+    const { code, paymentId } = request.params;
+    const invite = await groups.inviteTarget(code);
+    if (!invite || !UUID.test(paymentId)) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    const p = await payments.getPayment(paymentId);
+    if (!p || p.member_id !== invite.memberId) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    return privatePage(reply, pages.payStatusPage(ctx(request), { basePath: `/i/${code}`, payment: toStatus(p) }));
+  });
+
+  // Trip links: the app handles them; the web explains how to open them. Never indexed.
+  for (const [route, appPrefix] of [['/t/:id', 't']]) {
     app.get(route, async (request, reply) => {
       const id = String(request.params.id).slice(0, 64).replace(/[^A-Za-z0-9-]/g, '');
       const body = pages.appOnly(ctx(request), `${appPrefix}/${id}`, `/${appPrefix}/${id}`);

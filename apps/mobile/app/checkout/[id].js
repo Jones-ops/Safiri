@@ -100,11 +100,13 @@ export default function Checkout() {
     return () => clearTimeout(timer);
   }, [status, payment.data, option, id]);
 
-  // Reopened after paying: go straight to the receipt.
+  // Reopened after paying: go straight to the receipt. A split booking is paid on its group screen.
   const bookingStatus = booking.data?.status;
+  const isGroup = booking.data?.isGroup;
   useEffect(() => {
-    if (bookingStatus === 'confirmed' || bookingStatus === 'fully_paid') router.replace(`/receipt/${id}`);
-  }, [bookingStatus, id]);
+    if (isGroup) router.replace(`/group/${id}`);
+    else if (bookingStatus === 'confirmed' || bookingStatus === 'fully_paid') router.replace(`/receipt/${id}`);
+  }, [bookingStatus, isGroup, id]);
 
   if (booking.isPending) {
     return (
@@ -118,7 +120,7 @@ export default function Checkout() {
   if (!b) {
     return <EmptyState icon="help-circle-outline" title={t('hold.notFound')} action={{ label: t('web.backHome'), onPress: () => router.navigate('/explore') }} />;
   }
-  if (b.status === 'confirmed' || b.status === 'fully_paid') return null; // the effect above moves on to the receipt
+  if (b.isGroup || b.status === 'confirmed' || b.status === 'fully_paid') return null; // the effect above moves on to the receipt
   if (b.status !== 'held') {
     return <EmptyState icon="time-outline" title={t('hold.expiredTitle')} body={t('hold.expiredBody')} action={{ label: t('hold.startAgain'), onPress: () => router.replace(b.packageSlug ? `/p/${b.packageSlug}` : '/explore') }} />;
   }
@@ -200,6 +202,10 @@ export default function Checkout() {
         </View>
 
         <PhoneInput value={phone} onChange={setPhone} label={t('checkout.mpesaNumber')} error={phone && !parsedPhone.success ? 'errors.phone.invalid' : null} />
+
+        {b.travellers > 1 ? (
+          <Button label={t('price.splitWithFriends')} variant="secondary" icon="people-outline" onPress={() => router.push(`/group/${id}`)} />
+        ) : null}
 
         <View style={{ gap: space.xs }}>
           <AppText variant="heading" accessibilityRole="header">{t('checkout.policy')}</AppText>

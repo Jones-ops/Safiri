@@ -79,6 +79,40 @@ function createPlanRunner({ db, notifier, payLinks, baseUrl, log }) {
     return sent;
   }
 
+  /** Group trips: 3 days and 1 day before the final due date, tell the organiser who still owes. */
+  async function sendGroupReminders(today) {
+    const { rows } = await db.query(
+      `select b.id as booking_id, b.ref, b.phone, b.user_id, coalesce(pr.language, 'en') as language,
+              pp.final_due_date::text as due, (pp.final_due_date - $1::date) as days_left,
+              count(m.id)::int as owing, sum(m.share_kes - m.paid_kes)::int as amount
+       from bookings b
+       join payment_plans pp on pp.booking_id = b.id
+       join group_members m on m.booking_id = b.id and not m.is_organiser and m.status <> 'removed' and m.paid_kes < m.share_kes
+       left join profiles pr on pr.phone = b.phone
+       where b.is_group and b.status = 'confirmed' and (pp.final_due_date - $1::date) in (3, 1)
+       group by b.id, pr.language, pp.final_due_date`,
+      [today],
+    );
+    let sent = 0;
+    for (const r of rows) {
+      const t = translator(r.language);
+      const vars = { n: r.owing, amount: formatAmount(r.amount), ref: r.ref, date: shortDate(r.due, r.language) };
+      const channels = await notifier.notify({
+        kind: r.days_left === 3 ? 'group_unpaid_3d' : 'group_unpaid_1d',
+        language: r.language,
+        userId: r.user_id,
+        phone: r.phone,
+        bookingId: r.booking_id,
+        instalmentId: null,
+        sms: t('sms.groupUnpaid', vars),
+        whatsapp: { template: 'share_unpaid', params: [String(r.owing), vars.amount, r.ref, vars.date] },
+        push: { title: t('push.groupUnpaidTitle'), body: t('push.groupUnpaidBody', vars), data: { bookingId: r.booking_id, group: true } },
+      });
+      sent += channels.length;
+    }
+    return sent;
+  }
+
   async function cancelMissed(today) {
     const { rows } = await db.query(
       `select b.id, b.ref, b.phone, b.user_id, b.paid_kes, b.start_date::text as start,
@@ -119,7 +153,7 @@ function createPlanRunner({ db, notifier, payLinks, baseUrl, log }) {
   return {
     async tick({ today }) {
       const overdue = await markOverdue(today);
-      const reminders = await sendReminders(today);
+      const reminders = (await sendReminders(today)) + (await sendGroupReminders(today));
       const cancelled = await cancelMissed(today);
       return { today, overdue, reminders, cancelled };
     },

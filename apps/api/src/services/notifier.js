@@ -3,8 +3,8 @@
  *   push      to the traveller's devices, when they are signed in on the app
  *   whatsapp  approved template, once WhatsApp is configured
  *   sms       backup: whenever WhatsApp isn't configured or fails
- * Each (instalment, kind, channel) is recorded in notifications first; the unique index makes
- * a second attempt a no-op, so the job can run as often as it likes.
+ * Each message is recorded in notifications first; unique indexes (per instalment, or per
+ * booking for group reminders) make a second attempt a no-op, so jobs can run as often as they like.
  */
 function createNotifier({ db, sms, push, whatsapp, log }) {
   /** Claims the right to send; false if this message already went out on this channel. */
@@ -12,7 +12,7 @@ function createNotifier({ db, sms, push, whatsapp, log }) {
     const { rows } = await db.query(
       `insert into notifications (user_id, phone, booking_id, instalment_id, kind, channel, template, payload, status)
        values ($1, $2, $3, $4, $5, $6, $7, $8, 'queued')
-       on conflict (instalment_id, kind, channel) where instalment_id is not null do nothing
+       on conflict do nothing
        returning id`,
       [userId, phone, bookingId, instalmentId, kind, channel, template, JSON.stringify(payload)],
     );

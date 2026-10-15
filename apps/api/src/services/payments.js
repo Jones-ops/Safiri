@@ -89,6 +89,8 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
 
       // deposit / full start a held booking; instalment / balance pay down a confirmed one.
       const checkout = option === 'deposit' || option === 'full';
+      // A split booking is paid share by share (each member's invite link), never as a whole.
+      if (booking.is_group) throw new PaymentError('not_payable', { status: 'group_split' });
       if (checkout) {
         if (booking.status !== 'held') throw new PaymentError('not_payable', { status: booking.status });
         if (!booking.hold_live) throw new PaymentError('hold_expired');
@@ -143,39 +145,94 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       client.release();
     }
 
+    return sendPrompt({
+      ...payment,
+      phone,
+      ref: booking.ref,
+      description: { deposit: 'Safiri deposit', instalment: 'Instalment', balance: 'Balance' }[option] || 'Safiri trip',
+    });
+  }
+
+  /** Sends the STK push for a payment row already written, and records Daraja's answer. */
+  async function sendPrompt({ id, amountKes, phone, ref, description }) {
     if (!daraja.configured) {
-      await db.query(`update payments set status = 'failed', result_desc = 'M-PESA is not configured' where id = $1`, [payment.id]);
+      await db.query(`update payments set status = 'failed', result_desc = 'M-PESA is not configured' where id = $1`, [id]);
       throw new PaymentError('mpesa_not_configured');
     }
     try {
-      const push = await daraja.stkPush({
-        msisdn: phone,
-        amountKes: payment.amountKes,
-        accountReference: booking.ref,
-        description: { deposit: 'Safiri deposit', instalment: 'Instalment', balance: 'Balance' }[option] || 'Safiri trip',
-      });
+      const push = await daraja.stkPush({ msisdn: phone, amountKes, accountReference: ref, description });
       await db.query(
         `update payments set status = 'pending', merchant_request_id = $2, checkout_request_id = $3 where id = $1`,
-        [payment.id, push.merchantRequestId, push.checkoutRequestId],
+        [id, push.merchantRequestId, push.checkoutRequestId],
       );
-      return { paymentId: payment.id, status: 'pending', amountKes: payment.amountKes, customerMessage: push.customerMessage };
+      return { paymentId: id, status: 'pending', amountKes, customerMessage: push.customerMessage };
     } catch (err) {
       log.error({ err, body: err.body }, 'STK push failed');
-      await db.query(`update payments set status = 'failed', result_desc = $2 where id = $1`, [payment.id, String(err.message).slice(0, 200)]);
+      await db.query(`update payments set status = 'failed', result_desc = $2 where id = $1`, [id, String(err.message).slice(0, 200)]);
       throw new PaymentError('mpesa_unavailable');
     }
+  }
+
+  /**
+   * A group member pays what is left of their share (Slice 3c). The in-progress check is per
+   * member, not per booking, so several friends can pay at the same moment.
+   */
+  async function startSharePayment({ memberId, phone }) {
+    const client = await need().connect();
+    let payment;
+    let ref;
+    try {
+      await client.query('begin');
+      const { rows } = await client.query(
+        `select m.id, m.booking_id, m.share_kes - m.paid_kes as left_kes, m.status as member_status,
+                b.ref, b.status, (b.hold_expires_at > now()) as hold_live
+         from group_members m join bookings b on b.id = m.booking_id
+         where m.id = $1 for update of m, b`,
+        [memberId],
+      );
+      const m = rows[0];
+      if (!m) throw new PaymentError('booking_not_found');
+      if (m.status === 'held' && !m.hold_live) throw new PaymentError('hold_expired');
+      if (!['held', 'confirmed'].includes(m.status) || m.member_status === 'removed' || m.left_kes <= 0) {
+        throw new PaymentError('not_payable', { status: m.left_kes <= 0 ? 'share_paid' : m.status });
+      }
+      if (m.left_kes > MPESA_MAX_TRANSACTION_KES) throw new PaymentError('amount_over_limit', { maxKes: MPESA_MAX_TRANSACTION_KES });
+      const recent = await client.query(
+        `select 1 from payments where member_id = $1 and status in ('initiated', 'pending') and created_at > now() - interval '2 minutes'`,
+        [memberId],
+      );
+      if (recent.rowCount) throw new PaymentError('payment_in_progress');
+
+      const inserted = await client.query(
+        `insert into payments (booking_id, member_id, msisdn, amount_kes, status, purpose) values ($1, $2, $3, $4, 'initiated', 'share') returning id`,
+        [m.booking_id, memberId, phone, m.left_kes],
+      );
+      payment = { id: inserted.rows[0].id, amountKes: m.left_kes };
+      ref = m.ref;
+      if (m.status === 'held') {
+        await client.query(`update bookings set hold_expires_at = greatest(hold_expires_at, now() + interval '3 minutes') where id = $1`, [m.booking_id]);
+      }
+      await client.query('commit');
+    } catch (err) {
+      await client.query('rollback').catch(() => {});
+      throw err;
+    } finally {
+      client.release();
+    }
+    return sendPrompt({ ...payment, phone, ref, description: 'Safiri share' });
   }
 
   /** After confirm_payment: text the traveller a receipt (and record it). Never throws. */
   async function sendReceipt(checkoutRequestId, outcome) {
     try {
       const { rows } = await db.query(
-        `select p.amount_kes, p.mpesa_receipt, p.msisdn, b.id as booking_id, b.ref, b.status, b.user_id,
-                coalesce(pr.language, 'en') as language,
+        `select p.amount_kes, p.mpesa_receipt, p.msisdn, p.purpose, b.id as booking_id, b.ref, b.status, b.user_id,
+                coalesce(payer.language, owner.language, 'en') as language,
                 (select row_to_json(i) from (select amount_kes - paid_kes as amount, due_date::text as due
                    from instalments where booking_id = b.id and status in ('due', 'overdue') order by seq limit 1) i) as next
          from payments p join bookings b on b.id = p.booking_id
-         left join profiles pr on pr.phone = b.phone
+         left join profiles payer on payer.phone = p.msisdn  -- a friend paying a share gets their own language
+         left join profiles owner on owner.phone = b.phone
          where p.checkout_request_id = $1`,
         [checkoutRequestId],
       );
@@ -185,6 +242,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       const vars = { amount: formatAmount(r.amount_kes), receipt: r.mpesa_receipt, ref: r.ref };
       let message;
       if (outcome === 'refund_due') message = t('sms.refundDue', vars);
+      else if (r.purpose === 'share') message = t('sms.sharePaid', vars);
       else {
         message = t('sms.paymentConfirmed', vars);
         message += ' ' + (r.next ? t('sms.nextPayment', { amount: formatAmount(r.next.amount), date: shortDate(r.next.due, r.language) }) : t('sms.fullyPaid'));
@@ -310,7 +368,9 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       paidKes: b.paid_kes,
       holdExpiresAt: b.status === 'held' && b.hold_expires_at ? b.hold_expires_at.toISOString() : null,
       cancelPolicy: b.cancel_policy,
-      options: b.status === 'held' && b.hold_live ? optionsFor(b) : [],
+      isGroup: b.is_group,
+      // Split bookings are paid share by share, so they offer no whole-booking options.
+      options: b.status === 'held' && b.hold_live && !b.is_group ? optionsFor(b) : [],
       payments: payments.rows.map((p) => ({
         id: p.id, amountKes: p.amount_kes, receipt: p.mpesa_receipt?.startsWith('UNKNOWN-') ? null : p.mpesa_receipt,
         paidAt: p.confirmed_at?.toISOString() ?? null, purpose: p.purpose,
@@ -343,7 +403,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
     return rows[0]?.booking_id || null;
   }
 
-  return { startPayment, handleCallback, getPayment, reconcilePending, bookingSummary, claimBooking, bookingOwner, paymentBookingId, settle };
+  return { startPayment, startSharePayment, handleCallback, getPayment, reconcilePending, bookingSummary, claimBooking, bookingOwner, paymentBookingId, settle };
 }
 
 module.exports = { createPaymentService, PaymentError };

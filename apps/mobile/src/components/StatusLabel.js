@@ -13,6 +13,7 @@ const STATUS = {
   pending: { icon: 'hourglass-outline', tone: 'textMuted', key: 'status.pending' },
   failed: { icon: 'close-circle', tone: 'danger', key: 'status.failed' },
   not_paid: { icon: 'ellipse-outline', tone: 'textMuted', key: 'status.notPaid' },
+  removed: { icon: 'person-remove-outline', tone: 'textMuted', key: 'status.removed' }, // organiser covered their share
 };
 
 export const STATUS_KEYS = Object.keys(STATUS);

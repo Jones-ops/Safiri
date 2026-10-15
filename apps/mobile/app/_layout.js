@@ -57,6 +57,8 @@ function RootStack() {
         <Stack.Screen name="checkout/[id]" options={{ title: t('checkout.title') }} />
         <Stack.Screen name="receipt/[id]" options={{ title: '', gestureEnabled: false }} />
         <Stack.Screen name="pay/[code]" options={{ title: t('paylink.title') }} />
+        <Stack.Screen name="group/[id]" options={{ title: t('group.title') }} />
+        <Stack.Screen name="i/[code]" options={{ title: t('invite.title') }} />
       </Stack>
     </>
   );

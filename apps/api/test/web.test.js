@@ -170,12 +170,14 @@ test('assetlinks.json: 404 until the signing key is configured, then the App Lin
   await app.close();
 });
 
-test('trip and invite links are app-only; forged pay links are not found; none indexed', async () => {
+test('trip links are app-only; malformed pay and invite links are not found; none indexed', async () => {
   const app = await makeApp();
-  const forged = await app.inject({ url: '/pay/123' });
-  assert.equal(forged.statusCode, 404);
-  assert.equal(forged.headers['x-robots-tag'], 'noindex');
-  for (const url of ['/t/abc', '/i/INVGR0UP10X']) {
+  for (const url of ['/pay/123', '/i/no!']) {
+    const forged = await app.inject({ url });
+    assert.equal(forged.statusCode, 404, url);
+    assert.equal(forged.headers['x-robots-tag'], 'noindex');
+  }
+  for (const url of ['/t/abc']) {
     const res = await app.inject({ url });
     assert.equal(res.statusCode, 200, url);
     assert.equal(res.headers['x-robots-tag'], 'noindex');

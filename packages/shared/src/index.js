@@ -7,5 +7,6 @@ module.exports = {
   ...require('./catalogue'),
   ...require('./trip'),
   ...require('./schedule'),
+  ...require('./group'),
   i18n: require('./i18n'),
 };
