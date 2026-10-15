@@ -33,8 +33,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Check Expo dependency versions
+      # Compares against Expo's latest patch releases online, so it can flag new versions
+      # before anyone updates. The lockfile pins exact versions, so this warns, not fails.
+      - name: Check Expo dependency versions (warning only)
         working-directory: apps/mobile
+        continue-on-error: true
         run: npx expo install --check
       - name: Export the Android JS bundle
         working-directory: apps/mobile
