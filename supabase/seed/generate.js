@@ -150,8 +150,8 @@ from public.listings l, generate_series(current_date - 90, current_date + 180, i
     status: q(p.status || 'published'), published_at: p.status === 'draft' ? 'null' : 'now()',
   }))));
 
-  sql.push(insert('package_items', Object.entries(data.packages).flatMap(([key, p]) => p.items.map(([listingKey, dayNo, qty]) => ({
-    package_id: q(id('package', key)), listing_id: q(id('listing', listingKey)), day: dayNo, qty,
+  sql.push(insert('package_items', Object.entries(data.packages).flatMap(([key, p]) => p.items.map(([listingKey, dayNo, qty, startTime]) => ({
+    package_id: q(id('package', key)), listing_id: q(id('listing', listingKey)), day: dayNo, qty, start_time: q(startTime || null),
   })))));
 
   sql.push(buildBookings(allUsers));

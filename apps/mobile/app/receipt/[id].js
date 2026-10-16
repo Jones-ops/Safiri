@@ -14,6 +14,7 @@ import { useTheme } from '../../src/theme/ThemeProvider';
 import { formatDate, formatKes } from '../../src/lib/format';
 import { useSession } from '../../src/features/auth/session';
 import { useBooking, useClaimBooking } from '../../src/features/pay/api';
+import { SaveTripOffline } from '../../src/features/trips/SaveTripOffline';
 
 const ROW_STATUS = { paid: 'paid', due: 'due', overdue: 'overdue', cancelled: 'failed', waived: 'paid' };
 
@@ -53,6 +54,8 @@ export default function Receipt() {
   return (
     <ScrollView contentContainerStyle={{ padding: space.xl, gap: space.lg, paddingBottom: space.xxxl }}>
       <Stack.Screen options={{ title: '', headerBackVisible: false }} />
+      {/* The moment a trip is confirmed: save it for the day without signal. */}
+      {['confirmed', 'fully_paid'].includes(b.status) ? <SaveTripOffline bookingId={b.bookingId} /> : null}
 
       <View style={{ alignItems: 'center', gap: space.sm, padding: space.xl, borderRadius: radius.card, backgroundColor: refundDue ? c.surface : c.primarySoft }}>
         <Ionicons name={refundDue ? 'return-down-back-outline' : 'checkmark-circle'} size={48} color={refundDue ? c.warning : c.success} />

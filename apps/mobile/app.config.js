@@ -24,6 +24,7 @@ const plugins = [
     },
   ],
   ['expo-notifications', { color: '#1F5C46' }],
+  '@maplibre/maplibre-react-native', // offline trip maps (native code: dev and EAS builds only)
 ];
 
 // Source maps upload to Sentry only when the build has Sentry credentials (EAS secrets).

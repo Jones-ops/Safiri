@@ -41,7 +41,7 @@ export default function Verify() {
       return;
     }
     track(EVENTS.SIGNED_IN);
-    router.dismissTo('/profile');
+    // The root layout sees the new session and opens Explore (or the screen the user came for).
   };
 
   const resend = async () => {

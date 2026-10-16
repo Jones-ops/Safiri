@@ -17,9 +17,11 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }),
 });
 
-/** https://<site>/pay/<code> -> /pay/<code> inside the app. */
+/** https://<site>/pay/<code> -> /pay/<code> inside the app; in-app routes (/trip/<id>) as they are. */
 function routeFor(url) {
-  const match = /\/pay\/([A-Za-z0-9_.-]+)/.exec(String(url || ''));
+  const value = String(url || '');
+  if (value.startsWith('/')) return value;
+  const match = /\/pay\/([A-Za-z0-9_.-]+)/.exec(value);
   return match ? `/pay/${match[1]}` : null;
 }
 

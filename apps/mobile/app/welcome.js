@@ -33,7 +33,7 @@ export default function Welcome() {
     completeWelcome();
     setAnalyticsConsent(consents.analytics);
     track(EVENTS.WELCOME_COMPLETED, { language, lowData, analytics: consents.analytics });
-    router.replace('/explore');
+    router.replace('/sign-in'); // signed in already: the root layout moves on to Explore
   };
 
   return (
