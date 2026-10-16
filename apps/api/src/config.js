@@ -14,6 +14,9 @@ const schema = z
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     PUBLIC_BASE_URL: z.url().default('http://localhost:3000'),
     CORS_ORIGINS: z.string().default(''), // comma-separated; the app itself doesn't need CORS
+    // Only behind a reverse proxy or load balancer that sets X-Forwarded-For. Left off, a client
+    // could spoof its IP with that header and dodge the per-IP rate limits.
+    TRUST_PROXY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
 
     SUPABASE_URL: optional,
     SUPABASE_SERVICE_ROLE_KEY: optional,
@@ -29,6 +32,10 @@ const schema = z
 
     SENTRY_DSN: optional,
 
+    // Shown with the emergency numbers in every itinerary, e.g. 254700000000.
+
+    SUPPORT_PHONE: optional,
+
     // M-PESA Daraja (Slice 3a). Sandbox until go-live approval (paperwork track).
     DARAJA_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
     DARAJA_CONSUMER_KEY: optional,
@@ -42,6 +49,13 @@ const schema = z
     // until then reminders go by push and SMS.
     WHATSAPP_PHONE_NUMBER_ID: optional,
     WHATSAPP_ACCESS_TOKEN: optional,
+    WHATSAPP_APP_SECRET: optional, // signs webhook posts (X-Hub-Signature-256)
+    WHATSAPP_VERIFY_TOKEN: optional, // the one-time webhook handshake
+
+    // M-PESA B2C: payouts to providers and refunds to travellers (needs its own Daraja approval).
+    DARAJA_B2C_SHORTCODE: optional,
+    DARAJA_B2C_INITIATOR_NAME: optional,
+    DARAJA_B2C_SECURITY_CREDENTIAL: optional,
 
     // Android App Links: /.well-known/assetlinks.json lists the app and its signing key(s).
     ANDROID_PACKAGE: z.string().default('ke.safiri.app'),

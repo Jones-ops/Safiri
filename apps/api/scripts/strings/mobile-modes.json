@@ -1,0 +1,90 @@
+{
+  "en": {
+    "tabs": { "requests": "Requests", "calendar": "Calendar", "prices": "Prices", "payouts": "Payouts", "packages": "Packages", "bookings": "Bookings", "providers": "Providers" },
+    "modes": { "traveller": "Traveller", "provider": "Provider", "agency": "Agency", "switch": "Switch mode", "becomeProvider": "List your lodge, tours or transport", "becomeProviderHint": "Sign up as a provider in under 5 minutes.", "adminTools": "Admin tools" },
+    "cancel": {
+      "title": "Cancel this trip", "preview": "If you cancel today, {{days}} days before travel, you get {{pct}}% back: {{amount}}.", "kept": "{{amount}} is kept under the cancellation policy.",
+      "confirm": "Cancel the trip and refund {{amount}}", "confirmNoRefund": "Cancel the trip (no refund)", "done": "Your trip is cancelled. {{amount}} comes back to your M-PESA within 3 working days.",
+      "doneNoRefund": "Your trip is cancelled.", "notCancellable": "This trip can't be cancelled from the app. Contact support.", "button": "Cancel trip"
+    },
+    "review": {
+      "title": "How was your trip?", "rating": "Your rating", "body": "Tell other travellers (optional)", "addPhotos": "Add photos or a clip", "photos": "{{n}} added", "post": "Post review",
+      "posted": "Thank you! Your review is live.", "notYet": "Reviews open once your trip has ended.", "already": "You've already reviewed this trip.", "uploading": "Uploading {{pct}}%",
+      "queued": "You're offline. Your review will post when you're back online.", "referralTitle": "Give KES {{amount}}, get KES {{amount}}", "referralBody": "Friends get {{amount}} off their first trip with your code. You get {{amount}} off when they travel.",
+      "yourCode": "Your code", "share": "Share your code", "shareMessage": "Get KES {{amount}} off your first Safiri trip with my code {{code}}. Weekend getaways from Nairobi, paid in M-PESA instalments.", "usesLeft": "{{n}} uses left", "rewards": "Your rewards", "rewardCode": "{{amount}} off: code {{code}}"
+    },
+    "builder": { "referral": "Referral code (optional)", "referralApplied": "Referral discount applied: {{amount}} off", "referralNotApplied": "This code can't be used here (it's for first bookings by new travellers)." },
+    "provider": {
+      "requestsEmpty": "No requests yet", "requestsEmptyBody": "When a traveller books one of your listings, it appears here to accept or decline.", "guests": "{{n}} guests", "youReceive": "You receive {{amount}}",
+      "respondBy": "Answer by {{time}}", "accepted": "Accepted", "declined": "Declined", "expired": "Expired", "pending": "Waiting for you",
+      "calendarHint": "Tap a day to block or open it. Held and booked days can't be changed.", "blocked": "Blocked", "held": "Held", "booked": "Booked", "open": "Open", "block": "Block {{n}} days", "unblock": "Open {{n}} days", "dateInUse": "Some of those days have a hold or booking.",
+      "listing": "Listing", "pricesHint": "Your net price per {{unit}}. Travellers see this plus the agency margin and platform fee.", "season": "Season {{n}}", "from": "From", "to": "To", "netPrice": "Net price (KES)", "addSeason": "Add a season", "removeSeason": "Remove", "savePrices": "Save prices", "pricesSaved": "Prices saved", "allYear": "All year",
+      "owed": "Owed to you", "inFlight": "Being paid", "nextPayout": "Paid every Monday by M-PESA to {{phone}}", "payoutHistory": "Payout history", "payoutFailed": "Payout failed: check the number", "noPayouts": "No payouts yet. You're paid after each trip ends.",
+      "units": { "night": "night", "person": "person", "day": "day" }, "types": { "lodge": "Lodge or camp", "guide": "Guide", "driver": "Driver or transport", "activity": "Activity" },
+      "verifiedPending": "Waiting for Safiri to verify your licence. You'll be bookable once verified.", "notVerifiedTitle": "Almost there"
+    },
+    "onboard": {
+      "title": "List your business", "stepOf": "Step {{n}} of 6", "type": "What do you offer?", "name": "Business name", "where": "Where are you?", "destination": "Destination", "locationName": "Place name (e.g. Karagita, Naivasha)", "useMyLocation": "Use my location",
+      "listingTitle": "What travellers book", "listingTitleHint": "e.g. Lake-view room, breakfast included", "kind": "Kind", "unit": "Priced per", "capacity": "How many per day", "netKes": "Your price (KES)", "netHint": "What you receive. Travellers see this plus margin and fees.",
+      "contacts": "How we reach and pay you", "whatsapp": "WhatsApp number", "payout": "M-PESA payout number", "licence": "Licence number (optional)", "finish": "Finish", "next": "Next",
+      "done": "You're listed!", "doneBody": "Safiri will verify your details and you'll be bookable soon. Requests arrive on WhatsApp and here.", "saved": "Progress saved"
+    },
+    "agency": {
+      "newPackage": "New package", "noPackages": "No packages yet", "noPackagesBody": "Build a trip from your providers' listings, set your margin and publish.", "draft": "Draft", "published": "Published", "unpublished": "Unpublished",
+      "editor": "Package editor", "title": "Title", "summary": "Short description", "destination": "Destination", "nights": "Nights", "margin": "Your margin", "deposit": "Deposit", "instalments": "Instalments", "finalDue": "Final payment, days before travel", "grace": "Grace days",
+      "policy": "Cancellation policy", "tier": "{{days}}+ days before: {{pct}}% back", "finalTier": "Later: {{pct}}% back", "inclusions": "Included (one per line)", "exclusions": "Not included (one per line)",
+      "items": "What's in the trip", "addItem": "Add from listings", "pickListing": "Pick a listing", "day": "Day", "qty": "Nights / days", "time": "Start time (optional)", "removeItem": "Remove", "noListings": "No listings from your providers at this destination yet.",
+      "estimate": "Estimated traveller price: {{amount}} per person", "estimateHint": "The exact price is set by the server when you save.", "livePrice": "Traveller price: {{amount}} per person", "save": "Save", "saved": "Saved", "publish": "Publish", "unpublish": "Unpublish",
+      "unpriceable": "Can't publish: an item has no price or its provider isn't verified.", "listingNotAllowed": "Some items are from providers you're not linked to.",
+      "bookingsEmpty": "No bookings yet", "all": "All", "attention": "Needs attention", "providerDeclined": "A provider declined: swap them", "providerPending": "Waiting on a provider", "group": "Group",
+      "providersEmpty": "No providers linked yet", "providersEmptyBody": "Safiri links verified providers to your agency. Ask support to add one.", "verify": "Verify", "unverify": "Unverify", "verified": "Verified", "unverified": "Not verified",
+      "earned": "Earned (completed trips)", "paidOut": "Paid out", "owed": "Owed", "payoutsEmpty": "No payouts yet. Your margin is paid after each trip ends."
+    },
+    "profile": { "export": "Download my data", "exportReady": "Your data is ready to save or share.", "deleteTitle": "Delete my account", "deleteBody": "Your name, email, consents and uploads are deleted now. Booking and payment records are kept for 7 years as the law requires, without your name. This can't be undone.", "deleteConfirm": "Delete account", "deleted": "Your account has been deleted." },
+    "trip": { "cancel": "Cancel this trip", "review": "Write a review", "reviewDone": "Reviewed" }
+  },
+  "sw": {
+    "tabs": { "requests": "Maombi", "calendar": "Kalenda", "prices": "Bei", "payouts": "Malipo yako", "packages": "Vifurushi", "bookings": "Nafasi", "providers": "Watoa huduma" },
+    "modes": { "traveller": "Msafiri", "provider": "Mtoa huduma", "agency": "Wakala", "switch": "Badilisha hali", "becomeProvider": "Orodhesha hoteli, ziara au usafiri wako", "becomeProviderHint": "Jisajili kama mtoa huduma chini ya dakika 5.", "adminTools": "Zana za msimamizi" },
+    "cancel": {
+      "title": "Ghairi safari hii", "preview": "Ukighairi leo, siku {{days}} kabla ya safari, unarudishiwa {{pct}}%: {{amount}}.", "kept": "{{amount}} inabaki kwa mujibu wa sera ya kughairi.",
+      "confirm": "Ghairi safari na urudishiwe {{amount}}", "confirmNoRefund": "Ghairi safari (hakuna marejesho)", "done": "Safari yako imeghairiwa. {{amount}} itarudi kwenye M-PESA yako ndani ya siku 3 za kazi.",
+      "doneNoRefund": "Safari yako imeghairiwa.", "notCancellable": "Safari hii haiwezi kughairiwa kutoka kwenye programu. Wasiliana na msaada.", "button": "Ghairi safari"
+    },
+    "review": {
+      "title": "Safari ilikuwaje?", "rating": "Ukadiriaji wako", "body": "Waambie wasafiri wengine (hiari)", "addPhotos": "Ongeza picha au video", "photos": "{{n}} zimeongezwa", "post": "Tuma maoni",
+      "posted": "Asante! Maoni yako yanaonekana.", "notYet": "Maoni hufunguka safari ikiisha.", "already": "Tayari umetoa maoni kwa safari hii.", "uploading": "Inapakia {{pct}}%",
+      "queued": "Huna mtandao. Maoni yako yatatumwa ukirudi mtandaoni.", "referralTitle": "Toa KES {{amount}}, pata KES {{amount}}", "referralBody": "Marafiki hupata punguzo la {{amount}} kwa safari yao ya kwanza kwa msimbo wako. Wewe unapata {{amount}} wakisafiri.",
+      "yourCode": "Msimbo wako", "share": "Shiriki msimbo wako", "shareMessage": "Pata punguzo la KES {{amount}} kwa safari yako ya kwanza ya Safiri kwa msimbo wangu {{code}}. Safari za wikendi kutoka Nairobi, lipa kwa awamu za M-PESA.", "usesLeft": "Matumizi {{n}} yamebaki", "rewards": "Zawadi zako", "rewardCode": "Punguzo la {{amount}}: msimbo {{code}}"
+    },
+    "builder": { "referral": "Msimbo wa rafiki (hiari)", "referralApplied": "Punguzo limetumika: {{amount}}", "referralNotApplied": "Msimbo huu hauwezi kutumika hapa (ni kwa nafasi za kwanza za wasafiri wapya)." },
+    "provider": {
+      "requestsEmpty": "Bado hakuna maombi", "requestsEmptyBody": "Msafiri akiweka nafasi kwenye orodha yako, inaonekana hapa ukubali au ukatae.", "guests": "Wageni {{n}}", "youReceive": "Unapokea {{amount}}",
+      "respondBy": "Jibu kufikia {{time}}", "accepted": "Imekubaliwa", "declined": "Imekataliwa", "expired": "Imeisha", "pending": "Inakusubiri",
+      "calendarHint": "Bonyeza siku kuifunga au kuifungua. Siku zilizoshikiliwa au zilizo na nafasi haziwezi kubadilishwa.", "blocked": "Imefungwa", "held": "Imeshikiliwa", "booked": "Imewekwa nafasi", "open": "Wazi", "block": "Funga siku {{n}}", "unblock": "Fungua siku {{n}}", "dateInUse": "Baadhi ya siku hizo zina nafasi au zimeshikiliwa.",
+      "listing": "Orodha", "pricesHint": "Bei yako halisi kwa {{unit}}. Wasafiri huona hii pamoja na faida ya wakala na ada ya jukwaa.", "season": "Msimu {{n}}", "from": "Kuanzia", "to": "Hadi", "netPrice": "Bei halisi (KES)", "addSeason": "Ongeza msimu", "removeSeason": "Ondoa", "savePrices": "Hifadhi bei", "pricesSaved": "Bei zimehifadhiwa", "allYear": "Mwaka mzima",
+      "owed": "Unadaiwa", "inFlight": "Inalipwa", "nextPayout": "Hulipwa kila Jumatatu kwa M-PESA kwa {{phone}}", "payoutHistory": "Historia ya malipo", "payoutFailed": "Malipo yameshindwa: angalia namba", "noPayouts": "Bado hakuna malipo. Unalipwa baada ya kila safari kuisha.",
+      "units": { "night": "usiku", "person": "mtu", "day": "siku" }, "types": { "lodge": "Hoteli au kambi", "guide": "Mwongozaji", "driver": "Dereva au usafiri", "activity": "Shughuli" },
+      "verifiedPending": "Tunasubiri Safiri ithibitishe leseni yako. Utaweza kuwekewa nafasi ukithibitishwa.", "notVerifiedTitle": "Karibu kumaliza"
+    },
+    "onboard": {
+      "title": "Orodhesha biashara yako", "stepOf": "Hatua {{n}} kati ya 6", "type": "Unatoa nini?", "name": "Jina la biashara", "where": "Uko wapi?", "destination": "Eneo", "locationName": "Jina la mahali (mf. Karagita, Naivasha)", "useMyLocation": "Tumia mahali nilipo",
+      "listingTitle": "Wasafiri wanachoweka nafasi", "listingTitleHint": "mf. Chumba chenye mandhari ya ziwa, kifungua kinywa", "kind": "Aina", "unit": "Bei kwa", "capacity": "Ngapi kwa siku", "netKes": "Bei yako (KES)", "netHint": "Unachopokea. Wasafiri huona hii pamoja na faida na ada.",
+      "contacts": "Jinsi tunavyokufikia na kukulipa", "whatsapp": "Namba ya WhatsApp", "payout": "Namba ya M-PESA ya malipo", "licence": "Namba ya leseni (hiari)", "finish": "Maliza", "next": "Endelea",
+      "done": "Umeorodheshwa!", "doneBody": "Safiri itathibitisha maelezo yako na utaweza kuwekewa nafasi hivi karibuni. Maombi huja kwa WhatsApp na hapa.", "saved": "Maendeleo yamehifadhiwa"
+    },
+    "agency": {
+      "newPackage": "Kifurushi kipya", "noPackages": "Bado hakuna vifurushi", "noPackagesBody": "Tengeneza safari kutoka orodha za watoa huduma wako, weka faida yako na uchapishe.", "draft": "Rasimu", "published": "Imechapishwa", "unpublished": "Imeondolewa",
+      "editor": "Kihariri cha kifurushi", "title": "Kichwa", "summary": "Maelezo mafupi", "destination": "Eneo", "nights": "Usiku", "margin": "Faida yako", "deposit": "Amana", "instalments": "Awamu", "finalDue": "Malipo ya mwisho, siku kabla ya safari", "grace": "Siku za neema",
+      "policy": "Sera ya kughairi", "tier": "Siku {{days}}+ kabla: {{pct}}% inarudishwa", "finalTier": "Baadaye: {{pct}}% inarudishwa", "inclusions": "Imejumuishwa (moja kwa mstari)", "exclusions": "Haijajumuishwa (moja kwa mstari)",
+      "items": "Kilichomo kwenye safari", "addItem": "Ongeza kutoka orodha", "pickListing": "Chagua orodha", "day": "Siku", "qty": "Usiku / siku", "time": "Saa ya kuanza (hiari)", "removeItem": "Ondoa", "noListings": "Bado hakuna orodha kutoka kwa watoa huduma wako katika eneo hili.",
+      "estimate": "Bei inayokadiriwa kwa msafiri: {{amount}} kwa mtu", "estimateHint": "Bei kamili huwekwa na seva unapohifadhi.", "livePrice": "Bei ya msafiri: {{amount}} kwa mtu", "save": "Hifadhi", "saved": "Imehifadhiwa", "publish": "Chapisha", "unpublish": "Ondoa",
+      "unpriceable": "Haiwezi kuchapishwa: kitu kimoja hakina bei au mtoa huduma wake hajathibitishwa.", "listingNotAllowed": "Baadhi ya vitu ni kutoka kwa watoa huduma usiounganishwa nao.",
+      "bookingsEmpty": "Bado hakuna nafasi", "all": "Zote", "attention": "Zinahitaji umakini", "providerDeclined": "Mtoa huduma amekataa: mbadilishe", "providerPending": "Inamsubiri mtoa huduma", "group": "Kikundi",
+      "providersEmpty": "Bado hakuna watoa huduma walioungwa", "providersEmptyBody": "Safiri huunganisha watoa huduma waliothibitishwa na wakala wako. Omba msaada kuongeza mmoja.", "verify": "Thibitisha", "unverify": "Ondoa uthibitisho", "verified": "Imethibitishwa", "unverified": "Haijathibitishwa",
+      "earned": "Imepatikana (safari zilizokamilika)", "paidOut": "Imelipwa", "owed": "Inadaiwa", "payoutsEmpty": "Bado hakuna malipo. Faida yako hulipwa baada ya kila safari kuisha."
+    },
+    "profile": { "export": "Pakua data yangu", "exportReady": "Data yako iko tayari kuhifadhi au kushiriki.", "deleteTitle": "Futa akaunti yangu", "deleteBody": "Jina lako, barua pepe, idhini na vipakiwa vinafutwa sasa. Kumbukumbu za nafasi na malipo huhifadhiwa kwa miaka 7 kama sheria inavyotaka, bila jina lako. Hili haliwezi kutenduliwa.", "deleteConfirm": "Futa akaunti", "deleted": "Akaunti yako imefutwa." },
+    "trip": { "cancel": "Ghairi safari hii", "review": "Andika maoni", "reviewDone": "Umetoa maoni" }
+  }
+}

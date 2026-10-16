@@ -8,6 +8,7 @@ import { useIsOnline } from '../../src/lib/network';
 import { todayInKenya } from '@safiri/shared';
 import { useMyTrips } from '../../src/features/trips/api';
 import { useTripPayment } from '../../src/features/trips/useTripPayment';
+import { SaveTripOffline } from '../../src/features/trips/SaveTripOffline';
 
 export default function Trips() {
   const { space } = useTheme();
@@ -48,9 +49,11 @@ export default function Trips() {
           <TripCard
             key={trip.bookingId}
             trip={trip}
-            onPress={() => router.push(trip.isGroup ? `/group/${trip.bookingId}` : `/receipt/${trip.bookingId}`)}
+            onPress={() => router.push(trip.status === 'cancelled' ? `/receipt/${trip.bookingId}` : `/trip/${trip.bookingId}`)}
             onPay={online ? () => payment.payFor(trip) : undefined}
             paying={payment.flow.busy && payment.payingId === trip.bookingId}
+            onCancel={['confirmed', 'fully_paid'].includes(trip.status) && trip.startDate > today ? () => router.push(`/cancel/${trip.bookingId}`) : undefined}
+            onReview={trip.status === 'completed' ? () => router.push(`/review/${trip.bookingId}`) : undefined}
           />
         ))}
       </View>
@@ -66,6 +69,8 @@ export default function Trips() {
         {section(t('trips.upcoming'), upcoming)}
         {section(t('trips.past'), past)}
       </ScrollView>
+      {/* Every upcoming trip is kept ready for a day without signal. */}
+      {upcoming.map((trip) => <SaveTripOffline key={trip.bookingId} bookingId={trip.bookingId} />)}
       <MpesaPromptSheet {...payment.flow.sheet} phone={payment.phone} />
     </View>
   );

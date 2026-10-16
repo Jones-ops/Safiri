@@ -11,7 +11,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { FUNNEL, addDays, msisdnSchema, todayInKenya } from '@safiri/shared';
-import { AppText, Chip, EmptyState, PhoneInput, Skeleton, StickyPriceBar, Stepper } from '../src/components';
+import { AppText, Chip, EmptyState, PhoneInput, Skeleton, StickyPriceBar, Stepper, TextField } from '../src/components';
 import { useTheme } from '../src/theme/ThemeProvider';
 import { formatDate, formatDayChip, formatKes } from '../src/lib/format';
 import { useSession } from '../src/features/auth/session';
@@ -103,7 +103,10 @@ export default function Builder() {
   const [activityDays, setActivityDays] = useState({}); // listingId -> day
   const [transportIds, setTransportIds] = useState([]);
   const [phone, setPhone] = useState('');
+  const [referral, setReferral] = useState('');
   const [holdError, setHoldError] = useState(null);
+  // A friend's code counts only once it looks complete, so typing does not re-price on each key.
+  const referralCode = session && /^[A-Za-z0-9]{6,10}$/.test(referral.trim()) ? referral.trim().toUpperCase() : undefined;
 
   useEffect(() => {
     track(FUNNEL.OPEN_BUILDER, { packageSlug: packageSlug || null, destinationSlug: destinationSlug || null });
@@ -118,13 +121,13 @@ export default function Builder() {
   const byKind = (kind) => listings.filter((l) => l.kind === kind);
 
   const request = useMemo(() => {
-    if (!custom) return packageSlug ? { packageSlug, startDate, travellers } : null;
+    if (!custom) return packageSlug ? { packageSlug, startDate, travellers, referralCode } : null;
     const items = [];
     if (stayId && nights > 0) items.push({ listingId: stayId, day: 1, qty: nights });
     for (const [listingId, day] of Object.entries(activityDays)) items.push({ listingId, day, qty: 1 });
     for (const listingId of transportIds) items.push({ listingId, day: 1, qty: 1 });
-    return items.length ? { destinationSlug, nights, items, startDate, travellers } : null;
-  }, [custom, packageSlug, destinationSlug, startDate, travellers, nights, stayId, activityDays, transportIds]);
+    return items.length ? { destinationSlug, nights, items, startDate, travellers, referralCode } : null;
+  }, [custom, packageSlug, destinationSlug, startDate, travellers, nights, stayId, activityDays, transportIds, referralCode]);
 
   const quote = useQuote(request);
   const q = quote.data;
@@ -252,7 +255,13 @@ export default function Builder() {
           ) : null}
           {!session ? (
             <PhoneInput value={phone} onChange={setPhone} label={t('builder.phoneNeeded')} error={phone && !phoneOk ? 'errors.phone.invalid' : null} />
-          ) : null}
+          ) : (
+            <View style={{ gap: space.sm }}>
+              <TextField label={t('builder.referral')} value={referral} onChangeText={setReferral} placeholder="ABCD2345" maxLength={10} />
+              {q && referralCode && q.referralApplied ? <Notice icon="gift-outline" tone="success">{t('builder.referralApplied', { amount: formatKes(q.discountKes) })}</Notice> : null}
+              {q && referralCode && !q.referralApplied && !quote.isFetching ? <Notice icon="information-circle-outline" tone="warning">{t('builder.referralNotApplied')}</Notice> : null}
+            </View>
+          )}
         </View>
       </ScrollView>
 

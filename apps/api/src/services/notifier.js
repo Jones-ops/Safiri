@@ -60,7 +60,7 @@ function createNotifier({ db, sms, push, whatsapp, log }) {
       const id = await claim({ ...base, channel: 'whatsapp', template: m.whatsapp.template, payload: m.whatsapp });
       if (id) {
         try {
-          const r = await whatsapp.sendTemplate({ to: m.phone, template: m.whatsapp.template, language: m.language, params: m.whatsapp.params });
+          const r = await whatsapp.sendTemplate({ to: m.phone, template: m.whatsapp.template, language: m.language, params: m.whatsapp.params, buttons: m.whatsapp.buttons || [] });
           await record(id, { providerId: r.id });
           whatsappSent = true;
           sent.push('whatsapp');

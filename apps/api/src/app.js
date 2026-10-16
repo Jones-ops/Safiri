@@ -19,8 +19,16 @@ const { createPlanRunner } = require('./services/plans');
 const { createPayLinks } = require('./lib/paylink');
 const { createBookingAccess } = require('./lib/access');
 const { createGroupService } = require('./services/groups');
+const { createItineraryService } = require('./services/itinerary');
 const { createDb } = require('./lib/db');
 const { requireUser, optionalUser } = require('./lib/auth');
+const { createRoleGuard } = require('./lib/roles');
+const { createManageService } = require('./services/manage');
+const { createProviderService } = require('./services/providers');
+const { createSettlementService } = require('./services/settlement');
+const { createCancellationService } = require('./services/cancellations');
+const { createSignedCodes } = require('./lib/paylink');
+const { createAccountService } = require('./services/account');
 
 async function buildApp(config, overrides = {}) {
   const app = Fastify({
@@ -30,7 +38,7 @@ async function buildApp(config, overrides = {}) {
       redact: ['req.headers.authorization', 'req.headers["webhook-signature"]'],
       transport: config.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
     },
-    trustProxy: true,
+    trustProxy: config.TRUST_PROXY,
     bodyLimit: 256 * 1024,
   });
 
@@ -52,7 +60,8 @@ async function buildApp(config, overrides = {}) {
     catalogue: overrides.catalogue || createCatalogue(supabase),
     db: overrides.db !== undefined ? overrides.db : createDb(config.DATABASE_URL),
   };
-  deps.quotes = overrides.quotes || createQuoteService(deps.db);
+  deps.account = createAccountService({ db: deps.db, supabase, log: app.log });
+  deps.quotes = overrides.quotes || createQuoteService(deps.db, { referrals: deps.account });
   deps.holds = overrides.holds || createHoldService(deps.db, { tokenSecret: config.HOLD_TOKEN_SECRET });
   deps.daraja = overrides.daraja || createDaraja({
     env: config.DARAJA_ENV,
@@ -63,6 +72,14 @@ async function buildApp(config, overrides = {}) {
     callbackUrl: config.DARAJA_CALLBACK_BASE_URL && config.DARAJA_CALLBACK_SECRET
       ? `${config.DARAJA_CALLBACK_BASE_URL.replace(/\/$/, '')}/hooks/mpesa/stk/${config.DARAJA_CALLBACK_SECRET}`
       : null,
+    b2c: {
+      shortcode: config.DARAJA_B2C_SHORTCODE,
+      initiatorName: config.DARAJA_B2C_INITIATOR_NAME,
+      securityCredential: config.DARAJA_B2C_SECURITY_CREDENTIAL,
+      resultUrl: config.DARAJA_CALLBACK_BASE_URL && config.DARAJA_CALLBACK_SECRET
+        ? `${config.DARAJA_CALLBACK_BASE_URL.replace(/\/$/, '')}/hooks/mpesa/b2c/${config.DARAJA_CALLBACK_SECRET}`
+        : null,
+    },
   });
   deps.payments = overrides.payments || createPaymentService({ db: deps.db, daraja: deps.daraja, sms: deps.sms, log: app.log });
   deps.payLinks = createPayLinks(config.HOLD_TOKEN_SECRET);
@@ -74,12 +91,49 @@ async function buildApp(config, overrides = {}) {
     log: app.log,
   });
   deps.plans = createPlanRunner({ db: deps.db, notifier: deps.notifier, payLinks: deps.payLinks, baseUrl: config.PUBLIC_BASE_URL, log: app.log });
+  deps.itinerary = createItineraryService({ db: deps.db, supportPhone: config.SUPPORT_PHONE });
   deps.groups = createGroupService({ db: deps.db, baseUrl: config.PUBLIC_BASE_URL });
   deps.mayAccess = createBookingAccess({ payments: deps.payments, holds: deps.holds });
   deps.requireUser = requireUser(deps.verifyToken);
   deps.optionalUser = optionalUser(deps.verifyToken);
+  deps.requireRole = createRoleGuard({ db: deps.db, requireUser: deps.requireUser });
+  deps.manage = createManageService({ db: deps.db, quotes: deps.quotes });
+  deps.requestCodes = createSignedCodes(config.HOLD_TOKEN_SECRET, 'req');
+  deps.providers = overrides.providers || createProviderService({ db: deps.db, notifier: deps.notifier, requestCodes: deps.requestCodes, baseUrl: config.PUBLIC_BASE_URL, log: app.log });
+  deps.settlement = overrides.settlement || createSettlementService({ db: deps.db, daraja: deps.daraja, log: app.log });
+  deps.cancellations = createCancellationService({ db: deps.db, notifier: deps.notifier, log: app.log });
+  // Once a booking confirms, its providers are asked to accept, and a referrer earns their reward.
+  deps.payments.hooks.onConfirmed = async (bookingId) => {
+    await deps.providers.sendRequests(bookingId);
+    await deps.account.rewardOnConfirm(bookingId);
+  };
+  // A hold on a discounted quote uses up the new traveller's one referral.
+  deps.holds.hooks.onHeld = (held) => deps.account.redeem(held);
 
   await app.register(require('@fastify/sensible'));
+  // Security headers for the web pages. Styles are inline (no stylesheet request on 3G); the
+  // only scripts are JSON-LD data blocks, which browsers never execute; images come from Storage.
+  const supabaseOrigin = config.SUPABASE_URL ? new URL(config.SUPABASE_URL).origin : null;
+  await app.register(require('@fastify/helmet'), {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'none'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', ...(supabaseOrigin ? [supabaseOrigin] : [])],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        upgradeInsecureRequests: config.NODE_ENV === 'production' ? [] : null,
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Storage images are cross-origin
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  });
+  // API responses carry personal data: never cache them anywhere in between.
+  app.addHook('onSend', async (request, reply) => {
+    if (request.url.startsWith('/v1/')) reply.header('cache-control', 'no-store');
+  });
   await app.register(require('@fastify/cors'), {
     origin: config.CORS_ORIGINS ? config.CORS_ORIGINS.split(',').map((s) => s.trim()) : false,
   });
@@ -92,6 +146,10 @@ async function buildApp(config, overrides = {}) {
   await app.register(require('./routes/pay'), deps);
   await app.register(require('./routes/plans'), deps);
   await app.register(require('./routes/groups'), deps);
+  await app.register(require('./routes/travel'), deps);
+  await app.register(require('./routes/manage'), deps);
+  await app.register(require('./routes/providers'), deps);
+  await app.register(require('./routes/account'), deps);
   await app.register(require('./routes/web'), deps);
 
   if (config.SENTRY_DSN) Sentry.setupFastifyErrorHandler(app);

@@ -10,10 +10,12 @@
     "test": "node --test \"test/**/*.test.js\"",
     "photos:upload": "node --env-file-if-exists=.env scripts/upload-photos.js",
     "schema:refresh": "node scripts/refresh-schema-vocab.js",
-    "daraja:check": "node --env-file-if-exists=.env scripts/daraja-check.js"
+    "daraja:check": "node --env-file-if-exists=.env scripts/daraja-check.js",
+    "roles:grant": "node --env-file-if-exists=.env scripts/grant-role.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.1",
+    "@fastify/helmet": "^13.2.0",
     "@fastify/rate-limit": "^11.2.1",
     "@fastify/sensible": "^6.0.7",
     "@safiri/shared": "0.1.0",

@@ -8,5 +8,7 @@ module.exports = {
   ...require('./trip'),
   ...require('./schedule'),
   ...require('./group'),
+  ...require('./travel'),
+  ...require('./manage'),
   i18n: require('./i18n'),
 };

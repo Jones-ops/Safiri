@@ -32,12 +32,13 @@ class QuoteError extends Error {
 const LISTING_COLUMNS = `l.id, l.title, l.kind, l.unit, l.provider_id, l.destination_id,
   (l.active and p.verified_at is not null) as bookable`;
 
-async function loadPackageTrip(db, slug) {
+async function loadPackageTrip(db, slug, { allowDraft = false } = {}) {
+  // Travellers quote published packages only; staff price drafts too (allowDraft, never from a request body).
   const { rows } = await db.query(
     `select p.id, p.destination_id, p.nights, p.margin_bps, p.deposit_pct, p.instalments, d.slug as destination_slug, d.drive_hours
      from packages p join destinations d on d.id = p.destination_id
-     where p.slug = $1 and p.status = 'published'`,
-    [slug],
+     where p.slug = $1 and (p.status = 'published' or $2)`,
+    [slug, allowDraft],
   );
   if (!rows[0]) throw new QuoteError('package_not_found', 404);
   const pkg = rows[0];
@@ -116,7 +117,7 @@ async function loadPrices(db, lines) {
 /** Free units per listing and date (a missing availability row means nothing to sell). */
 async function loadFree(db, lines) {
   const { rows } = await db.query(
-    `select a.listing_id, a.date::text, a.units_total - a.units_held - a.units_booked as free
+    `select a.listing_id, a.date::text, case when a.blocked then 0 else a.units_total - a.units_held - a.units_booked end as free
      from availability a
      join unnest($1::uuid[], $2::date[]) as need(listing_id, date) on need.listing_id = a.listing_id and need.date = a.date`,
     [lines.map((l) => l.listing.id), lines.map((l) => l.date)],
@@ -125,7 +126,7 @@ async function loadFree(db, lines) {
   return (listingId, date) => free.get(`${listingId}|${date}`) ?? 0;
 }
 
-function createQuoteService(db, { now = () => new Date() } = {}) {
+function createQuoteService(db, { now = () => new Date(), referrals = null } = {}) {
   /** Prices a trip without saving it (also used to refresh packages' display prices). */
   async function priceTrip(request) {
     if (!db) throw new QuoteError('not_configured', 503);
@@ -136,7 +137,9 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
       throw new QuoteError('date_out_of_range', 422, { earliest, latest });
     }
 
-    const trip = request.packageSlug ? await loadPackageTrip(db, request.packageSlug) : await loadCustomTrip(db, request);
+    const trip = request.packageSlug
+      ? await loadPackageTrip(db, request.packageSlug, { allowDraft: Boolean(request.allowDraft) })
+      : await loadCustomTrip(db, request);
     const { travellers, startDate } = request;
     const byRef = new Map(trip.items.map((i) => [i.listing.id, i.listing]));
     const lines = expandLines(
@@ -166,7 +169,10 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
   async function createQuote(request, { userId = null } = {}) {
     const priced = await priceTrip(request);
     const { trip, lines, perPerson, isAvailable, startDate, endDate, travellers } = priced;
-    const totalKes = perPerson.totalKes * travellers;
+    // A referral code takes a fixed amount off a new traveller's first booking (never the whole price).
+    const referral = referrals ? await referrals.referralFor(request.referralCode, userId) : null;
+    const discountKes = referral ? Math.min(referral.discountKes, perPerson.totalKes * travellers - 1) : 0;
+    const totalKes = perPerson.totalKes * travellers - discountKes;
 
     // perPerson.lines is in the same order as lines. A line's net (what that provider receives)
     // is the unit net x per-person quantity x travellers.
@@ -182,8 +188,8 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
 
     const { rows } = await db.query(
       `insert into quotes (user_id, package_id, destination_id, start_date, end_date, travellers, items, breakdown,
-                           per_person_kes, total_kes, expires_at)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() + make_interval(mins => $11))
+                           per_person_kes, total_kes, expires_at, referral_id, discount_kes)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() + make_interval(mins => $11), $12, $13)
        returning id, expires_at`,
       [
         userId, trip.packageId, trip.destinationId, startDate, endDate, travellers, JSON.stringify(items),
@@ -193,7 +199,7 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
           feeBps: DEFAULTS.PLATFORM_FEE_BPS,
           nights: trip.nights,
         }),
-        perPerson.totalKes, totalKes, QUOTE_MINUTES,
+        perPerson.totalKes, totalKes, QUOTE_MINUTES, referral?.referralId || null, discountKes,
       ],
     );
 
@@ -212,6 +218,8 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
       travellers,
       perPersonKes: perPerson.totalKes,
       totalKes,
+      discountKes,
+      referralApplied: Boolean(referral),
       instalments: preview ? { times: preview.times, amountKes: preview.amountKes, schedule: preview.schedule } : null,
       // The "or 4 x 3,925" line under the per-person price, so the app never divides money itself.
       perPersonInstalments: perPersonPreview ? { times: perPersonPreview.times, amountKes: perPersonPreview.amountKes } : null,
@@ -226,13 +234,14 @@ function createQuoteService(db, { now = () => new Date() } = {}) {
    * Keeps packages.from_price_kes (the display price on Explore and the web) equal to what a
    * quote would charge one traveller sharing a room, for a trip starting in 14 days.
    */
-  async function refreshFromPrices() {
-    const { rows } = await db.query(`select slug, from_price_kes from packages where status = 'published'`);
+  async function refreshFromPrices({ slug = null } = {}) {
+    // Drafts are priced too, so agencies see the display price before publishing.
+    const { rows } = await db.query(`select slug, from_price_kes from packages where $1::text is null or slug = $1`, [slug]);
     const startDate = addDays(todayInKenya(now()), 14);
     let changed = 0;
     for (const p of rows) {
       try {
-        const { perPerson } = await priceTrip({ packageSlug: p.slug, startDate, travellers: 2 });
+        const { perPerson } = await priceTrip({ packageSlug: p.slug, startDate, travellers: 2, allowDraft: true });
         if (perPerson.totalKes !== p.from_price_kes) {
           await db.query(`update packages set from_price_kes = $2 where slug = $1`, [p.slug, perPerson.totalKes]);
           changed += 1;

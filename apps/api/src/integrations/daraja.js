@@ -34,8 +34,13 @@ function classifyResult(code) {
   return 'failed';
 }
 
-function createDaraja({ env = 'sandbox', consumerKey, consumerSecret, shortcode, passkey, callbackUrl, fetchImpl = fetch, now = () => new Date() }) {
+function createDaraja({
+  env = 'sandbox', consumerKey, consumerSecret, shortcode, passkey, callbackUrl,
+  b2c = {}, // { shortcode, initiatorName, securityCredential, resultUrl, timeoutUrl } for payouts and refunds
+  fetchImpl = fetch, now = () => new Date(),
+}) {
   const configured = Boolean(consumerKey && consumerSecret && shortcode && passkey && callbackUrl);
+  const b2cConfigured = configured && Boolean(b2c.shortcode && b2c.initiatorName && b2c.securityCredential && b2c.resultUrl);
   const host = HOSTS[env] || HOSTS.sandbox;
   let token = null;
 
@@ -124,6 +129,53 @@ function createDaraja({ env = 'sandbox', consumerKey, consumerSecret, shortcode,
       }
       throw new DarajaError(data?.errorMessage || 'STK query failed', { status, body: data });
     },
+
+    b2cConfigured,
+
+    /**
+     * Pays money out to a phone (provider payouts, refunds). Daraja answers "accepted" at once
+     * and reports the outcome later on the result URL, matched by ConversationID.
+     * @returns {{ conversationId, originatorConversationId }}
+     */
+    async b2cPay({ msisdn, amountKes, reference, remarks, occasion }) {
+      if (!b2cConfigured) throw new DarajaError('Daraja B2C is not configured');
+      const { ok, status, data } = await request('/mpesa/b2c/v3/paymentrequest', {
+        auth: `Bearer ${await accessToken()}`,
+        body: {
+          OriginatorConversationID: reference,
+          InitiatorName: b2c.initiatorName,
+          SecurityCredential: b2c.securityCredential,
+          CommandID: 'BusinessPayment',
+          Amount: amountKes,
+          PartyA: b2c.shortcode,
+          PartyB: msisdn,
+          Remarks: String(remarks).slice(0, 100),
+          QueueTimeOutURL: b2c.timeoutUrl || b2c.resultUrl,
+          ResultURL: b2c.resultUrl,
+          Occasion: String(occasion || '').slice(0, 100),
+        },
+      });
+      if (!ok || data?.ResponseCode !== '0') {
+        throw new DarajaError(data?.errorMessage || data?.ResponseDescription || 'B2C request failed', { status, body: data });
+      }
+      return { conversationId: data.ConversationID, originatorConversationId: data.OriginatorConversationID };
+    },
+  };
+}
+
+/** Pulls the fields we use out of a Daraja B2C result body. Returns null if it isn't one. */
+function parseB2cResult(body) {
+  const r = body?.Result;
+  if (!r || typeof r.ConversationID !== 'string') return null;
+  const params = Object.fromEntries((r.ResultParameters?.ResultParameter || []).map((p) => [p.Key, p.Value]));
+  return {
+    conversationId: r.ConversationID,
+    originatorConversationId: r.OriginatorConversationID,
+    resultCode: Number(r.ResultCode),
+    resultDesc: r.ResultDesc,
+    succeeded: Number(r.ResultCode) === 0,
+    receipt: r.TransactionID ? String(r.TransactionID) : params.TransactionReceipt ? String(params.TransactionReceipt) : null,
+    amountKes: params.TransactionAmount == null ? null : Number(params.TransactionAmount),
   };
 }
 
@@ -144,4 +196,4 @@ function parseStkCallback(body) {
   };
 }
 
-module.exports = { createDaraja, parseStkCallback, classifyResult, darajaTimestamp, DarajaError };
+module.exports = { createDaraja, parseStkCallback, parseB2cResult, classifyResult, darajaTimestamp, DarajaError };

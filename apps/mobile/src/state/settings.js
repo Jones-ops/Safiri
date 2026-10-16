@@ -16,11 +16,13 @@ export const useSettings = create(
       language: null, // null = follow the phone's language
       lowData: false,
       welcomeDone: false,
+      mode: 'traveller', // traveller | provider | agency: which tabs the app opens on
       consents: noConsents,
       consentsChangedAt: null,
 
       setLanguage: (language) => set({ language }),
       setLowData: (lowData) => set({ lowData }),
+      setMode: (mode) => set({ mode }),
       setConsent: (purpose, granted) =>
         set((s) => ({ consents: { ...s.consents, [purpose]: granted }, consentsChangedAt: new Date().toISOString() })),
       completeWelcome: () => set({ welcomeDone: true }),

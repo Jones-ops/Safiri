@@ -15,6 +15,13 @@ const JOBS = [
   { name: 'reconcile-payments', cron: '*/2 * * * *', run: ({ payments }) => payments.reconcilePending() },
   // Daily at 08:00 Nairobi time (never wake people at night): overdue marking, reminders, cancellations.
   { name: 'instalment-plans', cron: '0 8 * * *', run: ({ plans }) => plans.tick({ today: todayInKenya() }) },
+  // Trips that ended yesterday become completed (reviews open; providers become owed).
+  { name: 'complete-trips', cron: '0 9 * * *', run: ({ settlement }) => settlement.completeEndedTrips({ today: todayInKenya() }) },
+  // Providers are paid weekly, on Monday mornings; refunds go out within the half hour.
+  { name: 'provider-payouts', cron: '0 10 * * 1', run: ({ settlement }) => settlement.runPayouts() },
+  { name: 'refunds', cron: '*/30 * * * *', run: ({ settlement }) => settlement.runRefunds() },
+  // Provider requests unanswered for 24 hours expire and the agency is alerted.
+  { name: 'expire-provider-requests', cron: '30 * * * *', run: ({ providers }) => providers.expireRequests() },
 ];
 
 async function startJobs({ connectionString, log, services }) {

@@ -15,7 +15,7 @@ const SLUG = /^[a-z0-9-]{1,80}$/;
 const ICON = path.join(__dirname, '..', '..', '..', 'mobile', 'assets', 'brand', 'icon.png');
 const PAGE_CACHE = 'public, max-age=300, stale-while-revalidate=3600';
 
-async function webRoutes(app, { config, catalogue, payments, plans, payLinks, groups }) {
+async function webRoutes(app, { config, catalogue, payments, plans, payLinks, groups, providers }) {
   const base = config.PUBLIC_BASE_URL.replace(/\/$/, '');
 
   function ctx(request) {
@@ -71,6 +71,15 @@ async function webRoutes(app, { config, catalogue, payments, plans, payLinks, gr
       .header('content-type', 'text/html; charset=utf-8').send(String(body));
   const PAY_ERRORS = ['payment_in_progress', 'mpesa_unavailable', 'mpesa_not_configured', 'not_payable', 'amount_over_limit'];
 
+  // Form posts must come from our own pages: a page on another site must not be able to make a
+  // visitor's browser trigger an M-PESA prompt on someone's phone.
+  const sameSiteOnly = async (request, reply) => {
+    const fetchSite = request.headers['sec-fetch-site'];
+    const origin = request.headers.origin;
+    const crossSite = fetchSite === 'cross-site' || (origin && origin !== 'null' && origin !== base);
+    if (crossSite) return reply.code(403).send('Forbidden');
+  };
+
   async function payTarget(code) {
     const instalmentId = payLinks.instalmentIdFrom(code);
     const t = instalmentId ? await plans.payLinkTarget(instalmentId) : null;
@@ -91,7 +100,7 @@ async function webRoutes(app, { config, catalogue, payments, plans, payLinks, gr
     return privatePage(reply, pages.payPage(ctx(request), { code: request.params.code, target }));
   });
 
-  app.post('/pay/:code', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+  app.post('/pay/:code', { preHandler: sameSiteOnly, config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
     const { code } = request.params;
     const target = await payTarget(code);
     if (!target) return privatePage(reply, pages.notFound(ctx(request)), 404);
@@ -128,7 +137,7 @@ async function webRoutes(app, { config, catalogue, payments, plans, payLinks, gr
     return privatePage(reply, pages.invitePage(ctx(request), { code: request.params.code, invite }));
   });
 
-  app.post('/i/:code', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+  app.post('/i/:code', { preHandler: sameSiteOnly, config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
     const { code } = request.params;
     const invite = await groups.inviteTarget(code);
     if (!invite) return privatePage(reply, pages.notFound(ctx(request)), 404);
@@ -154,6 +163,30 @@ async function webRoutes(app, { config, catalogue, payments, plans, payLinks, gr
     const p = await payments.getPayment(paymentId);
     if (!p || p.member_id !== invite.memberId) return privatePage(reply, pages.notFound(ctx(request)), 404);
     return privatePage(reply, pages.payStatusPage(ctx(request), { basePath: `/i/${code}`, payment: toStatus(p) }));
+  });
+
+  // Provider requests by SMS link: Accept or Decline on a plain page, no app and no account.
+  app.get('/r/:code', async (request, reply) => {
+    const r = await providers.requestByCode(request.params.code);
+    if (!r) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    return privatePage(reply, pages.providerRequestPage(ctx(request), { code: request.params.code, request: r }));
+  });
+
+  app.post('/r/:code', { preHandler: sameSiteOnly, config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const { code } = request.params;
+    const r = await providers.requestByCode(code);
+    if (!r) return privatePage(reply, pages.notFound(ctx(request)), 404);
+    const action = String(request.body?.action || '');
+    if (!['accept', 'decline'].includes(action)) return privatePage(reply, pages.providerRequestPage(ctx(request), { code, request: r }), 400);
+    let error = null;
+    try {
+      await providers.respond({ firstItemId: r.firstItemId, accept: action === 'accept' });
+    } catch (err) {
+      if (!err.code) throw err;
+      error = err.code;
+    }
+    const fresh = await providers.requestByCode(code);
+    return privatePage(reply, pages.providerRequestPage(ctx(request), { code, request: fresh, error }));
   });
 
   // Trip links: the app handles them; the web explains how to open them. Never indexed.

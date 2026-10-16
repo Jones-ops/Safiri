@@ -154,6 +154,79 @@ friend won't pay, the organiser can cover their share. The organiser's screen up
 Structured data is checked in CI against the schema.org vocabulary (`apps/api/test/jsonld.test.js`).
 After using a new schema.org type, run `npm run schema:refresh --workspace @safiri/api`.
 
+## Who can do what (roles)
+
+Every account starts as a traveller. `profiles.roles` adds `provider`, `agency` or `admin`.
+The API checks roles on every call (`requireRole`); the app only decides which tabs to show.
+
+```sh
+npm run roles:grant --workspace @safiri/api -- you@example.com admin
+npm run roles:grant --workspace @safiri/api -- agency@example.com agency
+```
+
+- **Admin** (Agency mode in the app, plus admin-only calls): edits destinations, verifies
+  providers, creates agencies and links providers to them, grants roles, and sees every package,
+  booking and payout. All of it is under `/v1/manage/*`; writes are audited with the acting user.
+- **Agency** (Agency mode): creates and edits its own packages from its linked, verified providers'
+  listings (title, nights, margin, deposit, instalments, cancellation tiers, included / not
+  included, items by day), publishes and unpublishes them, and sees its bookings, providers and
+  payouts. Publishing needs a price: the server prices the package from current net prices, so an
+  item without a price or with an unverified provider blocks publishing.
+- **Provider** (Provider mode): signs up in the app in 6 steps (type, name, where, first listing
+  and net price, WhatsApp and M-PESA numbers, confirm). Safiri verifies the licence before anything
+  is bookable. Then: accept or decline booking requests, block or open days, set price seasons, and
+  see payouts.
+
+## Providers: requests and payouts
+
+When a booking confirms, each provider on it gets a request (WhatsApp template with Accept and
+Decline buttons when `WHATSAPP_*` is set, else SMS with a signed link `/r/<code>`; also in the
+app's Requests tab). A request not answered within 12 hours expires and the agency is alerted
+(`expire-provider-requests` job, hourly); a decline alerts the agency at once so they can swap the
+provider.
+
+Money moves on a schedule, never by hand:
+- `complete-trips` (daily 09:00): bookings whose end date has passed become `completed`, and
+  their revenue is recognised in the ledger (traveller prepayments split into provider payable,
+  agency payable and platform revenue).
+- `provider-payouts` (Mondays 10:00): everything owed to each provider is paid by **M-PESA B2C** to
+  their payout number in one transfer; agencies are paid their margin the same way.
+- `refunds` (every 30 min): refunds owed are sent by B2C.
+B2C needs its own Daraja approval (PAPERWORK item 3). Set `DARAJA_B2C_SHORTCODE`,
+`DARAJA_B2C_INITIATOR_NAME` and `DARAJA_B2C_SECURITY_CREDENTIAL`; results arrive at
+`/hooks/mpesa/b2c/<secret>`. Until then payouts and refunds stay `scheduled` and are listed for
+manual payment under Payouts.
+
+## Cancelling a trip
+
+A traveller cancels from Trips (confirmed or fully paid, before the start date). The screen shows
+what the package's cancellation tiers return today, then one confirming tap. The refund is recorded
+in the ledger (refunds payable; the kept part is platform revenue), the dates go back on sale, the
+providers are told, and the money is sent by B2C by the `refunds` job.
+
+## Reviews, referrals, data rights
+
+- **Reviews**: after a trip completes, the traveller rates it (1 to 5), writes a few words and adds up
+  to 6 photos or clips. Uploads are resumable (tus, 6 MB chunks) to the private `media` bucket,
+  under the traveller's own folder only (Storage policy). Written offline, the review waits on the
+  phone and posts when back online. Only the traveller on a completed booking can review, once.
+- **Referrals**: Profile > Share your code. A new traveller (no previous booking) gets KES 500 off
+  their first trip with a friend's code (the discount is applied by the server in the quote); the
+  friend gets a one-use KES 500 code when that trip confirms. Codes expire after 180 days, 10 uses.
+- **Data rights**: Profile > Download my data returns everything held (JSON, shared with the phone's
+  share sheet). Delete my account removes the sign-in, name, email, consents and uploads at once;
+  booking and payment records are kept for 7 years as the law requires, with no link to the person.
+
+## Security notes
+
+- Security headers on every response (`@fastify/helmet`): a CSP with no scripts on the web pages,
+  `frame-ancestors 'none'`, strict referrer policy. `/v1/*` responses are `cache-control: no-store`.
+- `TRUST_PROXY=true` only behind a proxy you control (rate limits key on the client IP).
+- Web forms (`/pay`, `/i`, `/r`) accept same-site POSTs only. Webhooks are authenticated: Daraja
+  by a secret path and STK Query, WhatsApp by `X-Hub-Signature-256` over the raw body.
+- On the phone, settings, session and offline trips are in encrypted MMKV stores whose key lives in
+  the device keystore (`expo-secure-store`).
+
 ## Rules that hold everywhere
 
 - **Money is integer KES.** One rounding rule, in `packages/shared/src/money.js`: margin rounds

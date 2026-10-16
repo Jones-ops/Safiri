@@ -8,7 +8,7 @@ import { Button } from './Button';
 import { StatusLabel } from './StatusLabel';
 
 /** A trip in the Trips tab: dates, status, how much is paid, and the next payment with Pay. */
-export function TripCard({ trip, onPress, onPay, paying }) {
+export function TripCard({ trip, onPress, onPay, paying, onCancel, onReview }) {
   const { c, radius, space } = useTheme();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -59,6 +59,11 @@ export function TripCard({ trip, onPress, onPay, paying }) {
           {onPay ? <Button label={t('trips.payNext', { amount: formatKes(next.amountKes) })} icon="phone-portrait-outline" onPress={onPay} loading={paying} /> : null}
         </View>
       ) : null}
+
+      {onReview ? (
+        <Button label={trip.reviewed ? t('trip.reviewDone') : t('trip.review')} icon={trip.reviewed ? 'checkmark-circle-outline' : 'star-outline'} variant="secondary" onPress={onReview} disabled={trip.reviewed} />
+      ) : null}
+      {onCancel ? <Button label={t('trip.cancel')} icon="close-circle-outline" variant="ghost" onPress={onCancel} /> : null}
     </Pressable>
   );
 }

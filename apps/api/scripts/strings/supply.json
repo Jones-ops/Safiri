@@ -1,0 +1,62 @@
+{
+  "en": {
+    "sms": {
+      "providerRequest": "Safiri: new booking {{ref}}, {{dates}}, {{guests}} guests: {{items}}. You receive KES {{payout}}. Accept or decline within 24 hours: {{link}}",
+      "providerAccepted": "Safiri: {{provider}} has confirmed your booking {{ref}} for {{dates}}.",
+      "providerDeclined": "Safiri: {{provider}} declined booking {{ref}} ({{dates}}). Please arrange a replacement in the app, or the traveller is refunded per policy.",
+      "providerNoReply": "Safiri: {{provider}} has not answered booking {{ref}} ({{dates}}) in 24 hours. Please arrange a replacement in the app.",
+      "providerCancelled": "Safiri: booking {{ref}} starting {{date}} was cancelled. Those dates are free again."
+    },
+    "push": {
+      "providerRequestTitle": "New booking request",
+      "providerRequestBody": "{{ref}}, {{dates}}, {{guests}} guests. You receive KES {{payout}}. Tap to accept or decline.",
+      "providerAcceptedTitle": "{{provider}} confirmed",
+      "providerAcceptedBody": "Your booking {{ref}} for {{dates}} is confirmed by the provider.",
+      "providerDeclinedTitle": "Provider declined",
+      "providerDeclinedBody": "{{provider}} declined {{ref}} ({{dates}}). Arrange a replacement.",
+      "providerNoReplyTitle": "Provider has not answered",
+      "providerNoReplyBody": "{{provider}} has not answered {{ref}} ({{dates}}) in 24 hours.",
+      "providerCancelledTitle": "Booking cancelled",
+      "providerCancelledBody": "{{ref}} starting {{date}} was cancelled. Those dates are free again."
+    },
+    "web": {
+      "requestTitle": "Booking request for {{name}}",
+      "requestDates": "Dates: {{dates}}",
+      "requestGuests": "Guests: {{n}}",
+      "requestPayout": "You receive: {{amount}}",
+      "requestRespondBy": "Please answer within 24 hours. No app or account needed.",
+      "requestStatus": { "accepted": "You accepted this booking. Thank you!", "declined": "You declined this booking.", "expired": "This request expired without an answer.", "auto_accepted": "This booking was accepted automatically.", "pending": "Waiting for your answer." },
+      "requestErrors": { "already_answered": "This request was already answered.", "request_closed": "This booking is no longer active.", "not_found": "This request could not be found." }
+    }
+  },
+  "sw": {
+    "sms": {
+      "providerRequest": "Safiri: nafasi mpya {{ref}}, {{dates}}, wageni {{guests}}: {{items}}. Utapokea KES {{payout}}. Kubali au kataa ndani ya saa 24: {{link}}",
+      "providerAccepted": "Safiri: {{provider}} amethibitisha nafasi yako {{ref}} ya {{dates}}.",
+      "providerDeclined": "Safiri: {{provider}} amekataa nafasi {{ref}} ({{dates}}). Tafadhali panga mbadala kwenye programu, la sivyo msafiri anarudishiwa pesa kwa sera.",
+      "providerNoReply": "Safiri: {{provider}} hajajibu nafasi {{ref}} ({{dates}}) kwa saa 24. Tafadhali panga mbadala kwenye programu.",
+      "providerCancelled": "Safiri: nafasi {{ref}} inayoanza {{date}} imeghairiwa. Tarehe hizo ziko wazi tena."
+    },
+    "push": {
+      "providerRequestTitle": "Ombi jipya la nafasi",
+      "providerRequestBody": "{{ref}}, {{dates}}, wageni {{guests}}. Utapokea KES {{payout}}. Bonyeza kukubali au kukataa.",
+      "providerAcceptedTitle": "{{provider}} amethibitisha",
+      "providerAcceptedBody": "Nafasi yako {{ref}} ya {{dates}} imethibitishwa na mtoa huduma.",
+      "providerDeclinedTitle": "Mtoa huduma amekataa",
+      "providerDeclinedBody": "{{provider}} amekataa {{ref}} ({{dates}}). Panga mbadala.",
+      "providerNoReplyTitle": "Mtoa huduma hajajibu",
+      "providerNoReplyBody": "{{provider}} hajajibu {{ref}} ({{dates}}) kwa saa 24.",
+      "providerCancelledTitle": "Nafasi imeghairiwa",
+      "providerCancelledBody": "{{ref}} inayoanza {{date}} imeghairiwa. Tarehe hizo ziko wazi tena."
+    },
+    "web": {
+      "requestTitle": "Ombi la nafasi kwa {{name}}",
+      "requestDates": "Tarehe: {{dates}}",
+      "requestGuests": "Wageni: {{n}}",
+      "requestPayout": "Utapokea: {{amount}}",
+      "requestRespondBy": "Tafadhali jibu ndani ya saa 24. Huhitaji programu wala akaunti.",
+      "requestStatus": { "accepted": "Umekubali nafasi hii. Asante!", "declined": "Umekataa nafasi hii.", "expired": "Ombi hili limeisha bila jibu.", "auto_accepted": "Nafasi hii ilikubaliwa kiotomatiki.", "pending": "Tunasubiri jibu lako." },
+      "requestErrors": { "already_answered": "Ombi hili tayari limejibiwa.", "request_closed": "Nafasi hii haipo tena.", "not_found": "Ombi hili halikupatikana." }
+    }
+  }
+}

@@ -220,10 +220,32 @@ ${error ? html`<p style="color:#B42318"><strong>${t(error)}</strong></p>` : ''}
   return page({ ...ctx, path: `/i/${code}`, title: `${heading} · Safiri`, description: t('web.payNoAppNeeded'), noindex: true, appPath: `i/${code}`, body });
 }
 
+/** A provider's booking request from the SMS link: what, when, how much, Accept or Decline. */
+function providerRequestPage(ctx, { code, request: r, error }) {
+  const { t, lang } = ctx;
+  const open = r.status === 'pending' && ['confirmed', 'fully_paid'].includes(r.bookingStatus);
+  const dates = r.firstDate === r.lastDate ? longDate(r.firstDate, lang) : `${longDate(r.firstDate, lang)} - ${longDate(r.lastDate, lang)}`;
+  const button = (action, label, extra) => html`<form method="post" action="/r/${code}${langQuery(lang)}" style="flex:1">
+<input type="hidden" name="action" value="${action}">
+<button class="btn ${extra}" type="submit" style="width:100%;font-size:16px;border-width:1.5px">${label}</button></form>`;
+  const body = html`<div class="wrap" style="max-width:520px">
+<h1>${t('web.requestTitle', { name: r.providerName })}</h1>
+<p class="muted">${t('web.inviteBooking', { ref: r.ref })} · ${r.title}</p>
+<ul>${r.items.map((i) => html`<li>${i}</li>`)}</ul>
+<p><strong>${t('web.requestDates', { dates })}</strong><br>${t('web.requestGuests', { n: r.travellers })}<br>${t('web.requestPayout', { amount: formatKes(r.payoutKes) })}</p>
+${error ? html`<p style="color:#B42318"><strong>${t(`web.requestErrors.${error}`)}</strong></p>` : ''}
+${open
+    ? html`<div style="display:flex;gap:12px">${button('accept', t('provider.accept'), '')}${button('decline', t('provider.decline'), 'secondary')}</div>
+<p class="muted">${t('web.requestRespondBy')}</p>`
+    : html`<p><strong>${t(`web.requestStatus.${r.status}`)}</strong></p>`}
+</div>`;
+  return page({ ...ctx, path: `/r/${code}`, title: `${t('web.requestTitle', { name: r.providerName })} · Safiri`, description: r.title || '', noindex: true, body });
+}
+
 function notFound(ctx, messageKey = 'web.notFound') {
   const { t, lang } = ctx;
   const body = html`<div class="wrap"><h1>${t(messageKey)}</h1><p><a class="btn" href="/${langQuery(lang)}">${t('web.backHome')}</a></p></div>`;
   return page({ ...ctx, path: '/404', title: `${t('web.notFound')} · Safiri`, description: t('web.notFound'), noindex: true, body });
 }
 
-module.exports = { home, destination, packagePage, privacy, appOnly, payPage, payStatusPage, invitePage, notFound };
+module.exports = { home, destination, packagePage, privacy, appOnly, payPage, payStatusPage, invitePage, providerRequestPage, notFound };

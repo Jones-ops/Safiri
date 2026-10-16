@@ -39,6 +39,8 @@ const MONTHS = {
 const shortDate = (iso, lang) => `${Number(iso.slice(8, 10))} ${(MONTHS[lang] || MONTHS.en)[Number(iso.slice(5, 7)) - 1]}`;
 
 function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) {
+  // Set after construction (app.js): what happens once a booking confirms, e.g. provider requests.
+  const hooks = { onConfirmed: null };
   function need() {
     if (!db) throw new PaymentError('mpesa_not_configured');
     return db;
@@ -270,6 +272,10 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       const receipt = parseStkCallback(payment.callback)?.receipt || null;
       const outcome = (await db.query('select confirm_payment($1, $2) as o', [payment.checkout_request_id, receipt])).rows[0].o;
       if (outcome !== 'already_confirmed') await sendReceipt(payment.checkout_request_id, outcome);
+      // A newly confirmed booking: ask its providers (those who don't auto-accept) to accept.
+      if (outcome === 'confirmed' && hooks.onConfirmed) {
+        await hooks.onConfirmed(payment.booking_id).catch((err) => log.error({ err, bookingId: payment.booking_id }, 'onConfirmed failed'));
+      }
       return outcome;
     }
     if (result.state === 'pending') {
@@ -345,13 +351,14 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
   async function bookingSummary(bookingId) {
     const b = await loadBooking(need(), bookingId);
     if (!b) return null;
-    const [payments, instalments] = await Promise.all([
+    const [payments, instalments, reviewed] = await Promise.all([
       db.query(
         `select id, amount_kes, status, mpesa_receipt, confirmed_at, purpose from payments
          where booking_id = $1 and status = 'succeeded' order by confirmed_at`,
         [bookingId],
       ),
       db.query(`select seq, amount_kes, paid_kes, due_date::text, status from instalments where booking_id = $1 order by seq`, [bookingId]),
+      db.query('select 1 from reviews where booking_id = $1 limit 1', [bookingId]),
     ]);
     return {
       bookingId: b.id,
@@ -369,6 +376,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
       holdExpiresAt: b.status === 'held' && b.hold_expires_at ? b.hold_expires_at.toISOString() : null,
       cancelPolicy: b.cancel_policy,
       isGroup: b.is_group,
+      reviewed: reviewed.rowCount > 0,
       // Split bookings are paid share by share, so they offer no whole-booking options.
       options: b.status === 'held' && b.hold_live && !b.is_group ? optionsFor(b) : [],
       payments: payments.rows.map((p) => ({
@@ -403,7 +411,7 @@ function createPaymentService({ db, daraja, sms, log, now = () => new Date() }) 
     return rows[0]?.booking_id || null;
   }
 
-  return { startPayment, startSharePayment, handleCallback, getPayment, reconcilePending, bookingSummary, claimBooking, bookingOwner, paymentBookingId, settle };
+  return { hooks, startPayment, startSharePayment, handleCallback, getPayment, reconcilePending, bookingSummary, claimBooking, bookingOwner, paymentBookingId, settle };
 }
 
 module.exports = { createPaymentService, PaymentError };

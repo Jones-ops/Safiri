@@ -13,7 +13,7 @@ const { PaymentError } = require('../services/payments');
 
 const { UUID } = require('../lib/access');
 
-async function payRoutes(app, { config, payments, mayAccess, optionalUser, requireUser }) {
+async function payRoutes(app, { config, payments, cancellations, settlement, mayAccess, optionalUser, requireUser }) {
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof PaymentError) {
       return reply.code(err.status).send({ error: err.code, ...(err.details ? { details: err.details } : {}) });
@@ -56,6 +56,32 @@ async function payRoutes(app, { config, payments, mayAccess, optionalUser, requi
       resultDesc: p.status === 'succeeded' ? null : p.result_desc,
       bookingStatus: p.booking_status,
     };
+  });
+
+  // Cancel and refund: the traveller sees the exact refund first, then confirms.
+  app.get('/v1/bookings/:id/cancel', { preHandler: optionalUser }, async (request, reply) => {
+    if (!(await mayAccess(request, request.params.id, request.query.token))) return reply.code(404).send({ error: 'not_found' });
+    return cancellations.preview(request.params.id);
+  });
+
+  app.post('/v1/bookings/:id/cancel', { preHandler: optionalUser, config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
+    if (!(await mayAccess(request, request.params.id, request.body?.token))) return reply.code(404).send({ error: 'not_found' });
+    return cancellations.cancel(request.params.id, request.user?.id || null);
+  });
+
+  // Daraja's B2C result callback (payouts and refunds), behind the same secret as the STK one.
+  app.post('/hooks/mpesa/b2c/:secret', { config: { rateLimit: { max: 300, timeWindow: '1 minute' } } }, async (request, reply) => {
+    const given = Buffer.from(String(request.params.secret));
+    if (!expected || given.length !== expected.length || !crypto.timingSafeEqual(given, expected)) {
+      return reply.code(404).send({ error: 'not_found' });
+    }
+    try {
+      const outcome = await settlement.handleB2cResult(request.body);
+      request.log.info({ outcome }, 'M-PESA B2C result');
+    } catch (err) {
+      request.log.error({ err }, 'B2C result failed');
+    }
+    return { ResultCode: 0, ResultDesc: 'Accepted' };
   });
 
   app.post('/v1/bookings/:id/claim', { preHandler: requireUser }, async (request, reply) => {

@@ -27,8 +27,10 @@ Kiswahili (`sw`); the parameter order must match what the API sends (apps/api/sr
 
 | Template | Sent to | Purpose |
 |---|---|---|
-| `booking_request` | Provider | New booking with Accept / Decline quick replies |
-| `booking_confirmed` | Traveller | Booking ref, dates, next payment |
+| `booking_request` | Provider | New booking. {{1}} booking ref, {{2}} dates, {{3}} guests, {{4}} payout KES, {{5}} items. Two quick-reply buttons: Accept, Decline (payloads set per message) |
+| `booking_confirmed` | Traveller | A provider confirmed. {{1}} booking ref, {{2}} provider name |
+| `provider_declined` | Agency | A provider declined. {{1}} booking ref, {{2}} provider, {{3}} dates |
+| `provider_no_reply` | Agency | No answer in 24 hours. {{1}} booking ref, {{2}} provider, {{3}} dates |
 | `payment_reminder` | Traveller | Instalment due in 3 days / 1 day. Body parameters, in order: {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} pay link |
 | `payment_overdue` | Traveller | Missed instalment. {{1}} amount, {{2}} booking ref, {{3}} due date, {{4}} last day to pay, {{5}} pay link |
 | `payment_received` | Traveller | Receipt with M-PESA code |

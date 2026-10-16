@@ -53,6 +53,7 @@ const quoteRequestSchema = z
       .optional(),
     startDate: isoDateSchema,
     travellers: z.number().int().min(1).max(20),
+    referralCode: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{6,10}$/).optional(),
   })
   .strict()
   .refine((r) => Boolean(r.packageSlug) !== Boolean(r.destinationSlug), { message: 'quote.packageOrDestination' })

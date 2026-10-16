@@ -22,6 +22,7 @@ class HoldError extends Error {
 }
 
 function createHoldService(db, { tokenSecret }) {
+  const hooks = { onHeld: null }; // set in app.js
   // In development without a secret, tokens stop working after a restart, which is harmless.
   const secret = tokenSecret || crypto.randomBytes(32).toString('base64url');
 
@@ -39,12 +40,16 @@ function createHoldService(db, { tokenSecret }) {
   }
 
   return {
+    hooks,
     tokenMatches,
 
     async placeHold({ quoteId, phone, userId }) {
       try {
         const { rows } = await need().query('select * from place_hold($1, $2, $3)', [quoteId, phone, userId || null]);
         const h = rows[0];
+        // A referral discount on the quote is recorded on the booking (and redeemed, once, by the hook).
+        await db.query('update bookings set discount_kes = (select discount_kes from quotes where id = $2) where id = $1', [h.booking_id, quoteId]);
+        if (hooks.onHeld) await hooks.onHeld({ bookingId: h.booking_id, quoteId, userId }).catch(() => {});
         return {
           bookingId: h.booking_id,
           ref: h.ref,
@@ -54,6 +59,8 @@ function createHoldService(db, { tokenSecret }) {
         };
       } catch (err) {
         if (HOLD_ERRORS[err.message]) throw new HoldError(err.message, HOLD_ERRORS[err.message]);
+        // A day the provider blocked after the quote: the availability constraint refuses the hold.
+        if (err.constraint === 'availability_not_oversold') throw new HoldError('sold_out', 409);
         throw err;
       }
     },
